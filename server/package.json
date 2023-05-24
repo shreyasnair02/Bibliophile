@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "purge": "rimraf dist",
+    "ts-init": "pnpm exec tsc --init",
     "start": "node dist/index.js",
     "build": "pnpm run purge && pnpm exec tsc",
     "dev": "nodemon index.ts"
