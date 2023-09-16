@@ -6,8 +6,10 @@ import {
   reviewBook,
   createBook,
   getRelated,
+  getSearchBooks,
 } from "./controllers/jobs";
 router.route("/").get(getBooks);
+router.route("/search").get(getSearchBooks);
 router.route("/createBook").post(createBook);
 router.route("/:id").get(getBook);
 router.route("/:id/reviewBook").post(reviewBook);

@@ -3,18 +3,19 @@ import { BsBookHalf, BsCart3 } from "react-icons/bs";
 import { TbBooks } from "react-icons/tb";
 import { BiHomeCircle } from "react-icons/bi";
 import { NavLink } from "react-router-dom";
+import NavSidebar from "./Sidebar/NavSidebar";
 function Navbar() {
   return (
-    <div className="navbar bg-base-100 border-b-2">
+    <div className="navbar bg-base-100 border-b-2 ">
       <div className="flex-1">
         <a className="btn btn-ghost normal-case text-xl">
           <BsBookHalf />
         </a>
       </div>
-      <div className="flex-grow flex gap-2">
+      <div className="flex-grow flex gap-2 ">
         <NavLink
           className={({ isActive, isPending }) =>
-            ` btn btn-sm lg:btn-md btn-ghost normal-case text-sm  
+            ` btn btn-sm lg:btn-md btn-ghost uppercase text-sm hidden lg:flex text-secondary font-light
                 ${
                   isActive
                     ? " bg-neutral underline decoration-default decoration-2 underline-offset-2"
@@ -30,7 +31,7 @@ function Navbar() {
 
         <NavLink
           className={({ isActive, isPending }) =>
-            ` btn btn-sm lg:btn-md btn-ghost normal-case text-sm  
+            ` btn btn-sm lg:btn-md btn-ghost upper  case text-sm hidden lg:flex text-secondary font-light
                 ${
                   isActive
                     ? " bg-neutral underline decoration-secondary  decoration-2 underline-offset-2"
@@ -45,7 +46,7 @@ function Navbar() {
         </NavLink>
       </div>
       <div className="flex-none">
-        <div className="dropdown dropdown-end">
+        <div className="dropdown dropdown-end hidden lg:block ">
           <label tabIndex={0} className="btn btn-ghost btn-circle">
             <div className="indicator">
               <BsCart3 size={22} />
@@ -58,7 +59,7 @@ function Navbar() {
             tabIndex={0}
             className="mt-3 z-[1] card card-compact dropdown-content w-52 bg-base-100 shadow"
           >
-            <div className="card-body">
+            <div className="card-body bg-neutral rounded-lg">
               <span className="font-bold text-lg">8 Items</span>
               <span className="text-info">Subtotal: $999</span>
               <div className="card-actions">
@@ -67,15 +68,16 @@ function Navbar() {
             </div>
           </div>
         </div>
-        <div className="dropdown dropdown-end">
+        <div className="dropdown dropdown-end hidden lg:block">
           <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
             <div className="w-10 rounded-full">
-              <img src="https://picsum.photos/200/300" />
+              <img src="https://robohash.org/as?set=set4" />
             </div>
           </label>
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+            className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow rounded-box w-52
+             bg-neutral"
           >
             <li>
               <a className="justify-between">
@@ -90,6 +92,9 @@ function Navbar() {
               <a>Logout</a>
             </li>
           </ul>
+        </div>
+        <div className="lg:hidden flex">
+          <NavSidebar />
         </div>
       </div>
     </div>

@@ -4,12 +4,43 @@ import { bookModel, IBook, reviewModel } from "../../Models/bookSchema";
 
 const getBooks = async (req: Request, res: Response) => {
   try {
-    const data = await bookModel.find();
+    // Decode the query parameter
+    const genres: string[] = req.query.genre
+      ? (req.query.genre as string).split(",")
+      : [];
+    console.log(genres);
+    const query =
+      genres.length > 0
+        ? {
+            genre: { $in: genres.map((genre) => new RegExp(genre, "i")) },
+          }
+        : {};
+    const data = await bookModel.find(query);
     res.status(200).json(data);
   } catch (error) {
     res.status(404).json(error);
   }
 };
+
+const getSearchBooks = async (req: Request, res: Response) => {
+  try {
+    // Decode the query parameter
+    const query: string | undefined = req.query.q as string | undefined;
+    if (!query) {
+      // Handle the case when 'q' is not provided in the query
+      return res.status(400).json(null);
+    }
+    // Use a regular expression to search for books with titles containing the specified letters
+    const regex = new RegExp(query, "i"); // 'i' for case-insensitive search
+
+    const data = await bookModel.find({ title: { $regex: regex } }).limit(5);
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 const createBook = async (req: Request, res: Response) => {
   try {
     const obj: IBook = req.body.book;
@@ -68,4 +99,11 @@ const getRelated = async (req: Request, res: Response) => {
   }
 };
 
-export { reviewBook, getBook, createBook, getBooks, getRelated };
+export {
+  reviewBook,
+  getBook,
+  createBook,
+  getBooks,
+  getRelated,
+  getSearchBooks,
+};
