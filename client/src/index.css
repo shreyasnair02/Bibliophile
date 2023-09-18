@@ -1,3 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .radio:checked,
+  .radio[aria-checked="true"] {
+    @apply shadow-[0_0_0_4px_hsl(var(--b2))_inset,0_0_0_4px_hsl(var(--b2))_inset];
+  }
+}
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: #8f54a0 #fff6eb;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 16px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #fff6eb;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #8f54a0;
+  border-radius: 8px;
+  border: 3px solid #fff6eb;
+}

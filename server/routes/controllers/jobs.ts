@@ -2,9 +2,29 @@ import { Request, Response } from "express";
 import mongoose from "mongoose";
 import { bookModel, IBook, reviewModel } from "../../Models/bookSchema";
 
+const setSort = (sort: string) => {
+  let sortOption = {};
+  switch (sort) {
+    case "createdAt":
+      sortOption = { createdAt: -1 };
+      break;
+    case "lth":
+      sortOption = { price: 1 };
+      break;
+    case "htl":
+      sortOption = { price: -1 };
+      break;
+    case "condition":
+      sortOption = { rating: 1 };
+      break;
+  }
+  return sortOption;
+};
+
 const getBooks = async (req: Request, res: Response) => {
   try {
-    // Decode the query parameter
+    const sort: string = req.query.sort as string;
+    console.log(sort);
     const genres: string[] = req.query.genre
       ? (req.query.genre as string).split(",")
       : [];
@@ -15,7 +35,7 @@ const getBooks = async (req: Request, res: Response) => {
             genre: { $in: genres.map((genre) => new RegExp(genre, "i")) },
           }
         : {};
-    const data = await bookModel.find(query);
+    const data = await bookModel.find(query).sort(setSort(sort));
     res.status(200).json(data);
   } catch (error) {
     res.status(404).json(error);

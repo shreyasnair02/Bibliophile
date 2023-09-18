@@ -1,16 +1,39 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TbShoppingCartPlus } from "react-icons/tb";
+import { useRef } from "react";
 const Card = ({ book, cart, setCart, showBook, bookID, index }) => {
   const [showInfo, setShowInfo] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const cols = useRef(9);
+
+  const setCols = () => {
+    if (window.innerWidth < 768) {
+      cols.current = 3;
+    } else if (window.innerWidth < 1024) {
+      cols.current = 4;
+    } else if (window.innerWidth < 1280) {
+      cols.current = 5;
+    } else if (window.innerWidth < 1536) {
+      cols.current = 6;
+    } else {
+      cols.current = 9;
+    }
+  };
   useEffect(() => {
+    setCols();
     if (window.innerWidth < 600) {
       setIsMobile(true);
       setShowInfo(false);
     }
 
     window.addEventListener("resize", () => {
+      setCols();
+      if (window.innerWidth < 600) {
+        setIsMobile(true);
+        setShowInfo(false);
+      }
+
       if (window.innerWidth < 600) {
         setIsMobile(true);
         setShowInfo(false);
@@ -38,7 +61,7 @@ const Card = ({ book, cart, setCart, showBook, bookID, index }) => {
       }}
     >
       <div
-        className="bookshelf__book"
+        className="flex--0  "
         onMouseOver={() => !isMobile && setShowInfo(true)}
         onMouseLeave={() => !isMobile && setShowInfo(false)}
       >
@@ -47,6 +70,7 @@ const Card = ({ book, cart, setCart, showBook, bookID, index }) => {
           className="h-[12.5rem] w-[8.5rem] object-cover rounded-lg rounded-b-none  "
           src={book.imageURL}
           alt={book.title}
+          loading="lazy"
         />
         <div className="flex justify-between p-2 items-center bg-neutral rounded-b-lg">
           <div className="bookshelf__price-container">
@@ -73,14 +97,16 @@ const Card = ({ book, cart, setCart, showBook, bookID, index }) => {
             initial={{ opacity: 0, x: "-20px" }}
             animate={{ opacity: 1, x: "0px" }}
             exit={{ opacity: 0, x: "20px" }}
-            className={`absolute left-full w-80 top-14 rounded-lg z-10 bg-neutral p-5 flex flex-col justify-center shadow-lg gap-3 
+            className={`absolute  w-80 top-14 rounded-lg z-20 bg-neutral p-5 flex flex-col justify-center shadow-lg gap-3 
             ${
-              index % 6 === 0
+              index % cols.current > cols.current / 2 ||
+              index % cols.current == 0
                 ? ` right-[110%] left-auto `
                 : ` right-auto left-[110%] `
             }
             `}
           >
+            {console.log(cols)}
             <h3 className="bookshelf__book-title">{book.title}</h3>
             <h3>{index}</h3>
             <h5 className="bookshelf__book-author">{book.author}</h5>
@@ -103,7 +129,7 @@ const Card = ({ book, cart, setCart, showBook, bookID, index }) => {
             </div>
             <div className="bookshelf__about-container">
               <h5>About the book</h5>
-              <p className=" line-clamp-3">{book.summary}</p>
+              <p className=" line-clamp-2">{book.summary}</p>
             </div>
           </motion.div>
         )}
@@ -113,3 +139,6 @@ const Card = ({ book, cart, setCart, showBook, bookID, index }) => {
 };
 
 export default Card;
+
+// index%9 < 4
+//

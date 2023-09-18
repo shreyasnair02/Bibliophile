@@ -30,6 +30,7 @@ export default function Input({
   className = "",
   listData,
 }) {
+  console.log({ listData });
   const [show, setShow] = useState(false);
   const blurTimeoutRef = useRef(null);
   const handleInputBlur = () => {
@@ -38,10 +39,10 @@ export default function Input({
       setShow(false);
     }, 400);
   };
- 
+
   return (
     <div
-      className={`flex bg-neutral relative w-[30rem] items-center rounded-md focus-within:outline focus-within:outline-primary focus-within:outline-2 join   ${className}`}
+      className={`flex bg-neutral relative w-64 lg:w-96 items-center rounded-md focus-within:outline focus-within:outline-primary focus-within:outline-2 join   ${className}`}
     >
       <div className="p-3 bg-base-200 rounded-md h-full rounded-r-none">
         {InputIcon(type)}

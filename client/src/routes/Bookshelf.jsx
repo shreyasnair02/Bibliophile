@@ -5,6 +5,8 @@ import { useEffect } from "react";
 import { useState } from "react";
 import Card from "../components/Card";
 import Filter from "../components/Sidebar/Filter";
+import { useGetBooks } from "../hooks/apiQueries";
+import { useQueryClient } from "@tanstack/react-query";
 
 const genres = [
   { genre: "Adventure", checked: false },
@@ -22,28 +24,19 @@ const genres = [
 ];
 
 function Bookshelf() {
-  const [data, setData] = useState();
+  const queryClient = useQueryClient();
   const [selected, setSelected] = useState(genres);
-  useEffect(() => {
-    const getData = async () => {
-      const required = selected
-        .filter((genre) => genre.checked === true)
-        .map((genre) => genre.genre);
-      console.log({ required });
-      const URL = `http://localhost:3000/books?genre=${encodeURIComponent(
-        required.join(",")
-      )}`;
-      const result = await fetch(URL);
-      const data = await result.json();
-
-      console.log(URL);
-      setData(data);
-    };
-    getData();
-  }, [selected]);
+  const [sort, setSort] = useState("createdAt");
+  const filterSelected = () =>
+    selected
+      .filter((genre) => genre.checked === true)
+      .map((genre) => genre.genre);
+  const books = useGetBooks({
+    selectedGenres: filterSelected(),
+    sort,
+  });
   const handleChange = (e) => {
     if (e.target.checked) {
-      // setSelected(prev=> prev.map((selected)=>[ ...selected, checked:selected.genre===e.target.dataset.genre?true:selected.checked ]) )
       setSelected((prev) =>
         prev.map((selected) => {
           if (selected.genre.toLowerCase() === e.target.dataset.genre) {
@@ -62,20 +55,27 @@ function Bookshelf() {
         })
       );
     }
+    queryClient.invalidateQueries("books");
   };
   const handleReset = () => {
     setSelected(genres);
+    queryClient.invalidateQueries("books");
+  };
+  const handleSort = (e) => {
+    setSort(e.target.dataset.sort);
+    queryClient.invalidateQueries("books");
   };
   return (
     <PageWrapper classes="">
-      <section className="max-h-[90vh] ">
+      <section className="">
         <Filter
           handleChange={handleChange}
           handleReset={handleReset}
           selected={selected}
+          handleSort={handleSort}
         >
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(130px,1fr))] gap-[clamp(0.5rem,4vw_-_1rem,1rem)] px-6 py-6 max-h-[90vh] min-h-[90vh] overflow-y-auto overflow-x-hidden">
-            {data?.map((book, i) => (
+          <div className="grid m-5  2xl:grid-cols-9 xl:grid-cols-6 lg:grid-cols-5  md:grid-cols-4 grid-cols-3  gap-[clamp(0.5rem,4vw_-_1rem,1rem)] px-6 py-6  overflow-hidden">
+            {books?.data?.map((book, i) => (
               <Card
                 book={book}
                 key={book._id}

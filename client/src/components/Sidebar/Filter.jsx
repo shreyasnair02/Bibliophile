@@ -2,19 +2,25 @@ import React from "react";
 import { useState } from "react";
 
 import { useEffect } from "react";
-import { LuFilter, LuFilterX } from "react-icons/lu";
+import { TbFilterOff, TbFilter } from "react-icons/tb";
+
 import Card from "../Card";
 import Input from "../Input";
+import { useSearchBooks } from "../../hooks/apiQueries";
+import { QueryClient } from "@tanstack/react-query";
 
-function Filter({ children, handleChange, handleReset, selected }) {
+function Filter({ children, handleChange, handleReset, selected, handleSort }) {
   const [isMobile, setIsMobile] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [searchData, setSearchData] = useState("");
+  const searchResults = useSearchBooks([searchData]);
+  const queryClient = new QueryClient();
   useEffect(() => {
-    if (window.innerWidth < 600) {
+    if (window.innerWidth < 825) {
       setIsMobile(true);
     }
     const setListener = () => {
-      if (window.innerWidth < 600) {
+      if (window.innerWidth < 825) {
         setIsMobile(true);
       } else {
         setIsMobile(false);
@@ -25,19 +31,12 @@ function Filter({ children, handleChange, handleReset, selected }) {
       window.removeEventListener("resize", setListener);
     };
   }, []);
-  const [searchData, setSearchData] = useState("");
-  const [searchResults, setSearchResults] = useState(null);
   const handleChangeSearch = async (searchData) => {
-    const URL = `http://localhost:3000/books/search?q=${searchData}`;
-    const response = await fetch(URL);
-    const data = await response.json();
-    setSearchResults(data);
-    console.log({ URL });
-    console.log({ response });
+    queryClient.invalidateQueries("books/search");
   };
   useEffect(() => {
     if (searchData.trim().length === 0) {
-      setSearchResults(null);
+      searchResults.remove();
       return;
     }
     const debouncedSearch = setTimeout(() => {
@@ -49,7 +48,7 @@ function Filter({ children, handleChange, handleReset, selected }) {
   }, [searchData]);
 
   return (
-    <div className="drawer max-h-[90vh] overflow-hidden">
+    <div className="drawer max-h-[90vh] overflow-x-hidden">
       <input
         id="my-drawer"
         type="checkbox"
@@ -59,7 +58,7 @@ function Filter({ children, handleChange, handleReset, selected }) {
       />
       <div className="drawer-content">
         {/* Page content here */}
-        <div className="flex items-center gap-2 m-2 ">
+        <div className="flex items-center gap-2 m-2  ">
           <Input
             type="search"
             className="bookshelf__search"
@@ -69,41 +68,82 @@ function Filter({ children, handleChange, handleReset, selected }) {
               setSearchData(e.target.value);
             }}
             value={searchData}
-            listData={searchResults}
+            listData={searchResults?.data}
           />
-          {console.log({ searchData })}
           <label
             htmlFor="my-drawer"
-            className={`btn btn-ghost drawer-button ${!isMobile && ` hidden `}`}
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            className={`btn hover:btn-secondary btn-ghost group btn-circle border-2 border-secondary drawer-button  ${
+              !isMobile && ` hidden `
+            }`}
+            onClick={() => {
+              setTimeout(() => {
+                setIsFilterOpen(!isFilterOpen);
+              }, 500);
+            }}
           >
-            <LuFilter size={25} />
+            <TbFilter
+              size={25}
+              className="text-secondary group-active:text-white  group-hover:text-white"
+            />
           </label>
         </div>
         {children}
       </div>
-      <div className={`drawer-side max-h-[90vh]  ${!isMobile && ` static `}`}>
+      <div
+        className={`drawer-side max-h-[90vh] lg:sticky lg:top-0 lg:left-0 lg:bottom-0  ${
+          !isMobile && ` static `
+        }`}
+      >
         <label
           htmlFor="my-drawer"
-          className="drawer-overlay"
+          className="drawer-overlay bg-black"
           onClick={() => setIsFilterOpen(false)}
         ></label>
         <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
           {/* Sidebar content here */}
           <div className=" px-4  w-full flex items-center justify-between my-5 ">
-            <h1>Filters</h1>
-            {selected.filter((genre) => genre.checked).length > 0 && (
-              <button
-                onClick={handleReset}
-                className={`btn btn-ghost ${
-                  selected.length == 0 && " hidden "
-                } `}
-              >
-                <LuFilterX size={25} className="float-right" />
-              </button>
-            )}
+            <div className="px-4 w-full flex items-center justify-between my-5">
+              <h1>Filters</h1>
+              {selected.filter((genre) => genre.checked).length > 0 && (
+                <button
+                  onClick={handleReset}
+                  className={`btn btn-ghost btn-circle ${
+                    selected.length == 0 && " hidden "
+                  } `}
+                >
+                  <TbFilterOff size={25} className="text-secondary" />
+                </button>
+              )}
+            </div>
           </div>
           <FilterOptions handleChange={handleChange} selected={selected} />
+          <div>
+            <h1>Sort By</h1>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <span className="label-text">Price (Low to High)</span>
+                <input
+                  type="radio"
+                  name="radio-10"
+                  className="radio radio-secondary"
+                  data-sort="lth"
+                  onChange={handleSort}
+                />
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <span className="label-text">Price (High to Low)</span>
+                <input
+                  type="radio"
+                  name="radio-10"
+                  className="radio radio-secondary"
+                  data-sort="htl"
+                  onChange={handleSort}
+                />
+              </label>
+            </div>
+          </div>
         </ul>
       </div>
     </div>
@@ -112,7 +152,6 @@ function Filter({ children, handleChange, handleReset, selected }) {
 
 const FilterOptions = ({ handleChange, selected }) => {
   return selected.map((selected, i) => {
-    selected;
     return (
       <Option
         key={i}
