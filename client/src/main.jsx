@@ -9,6 +9,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import HomePage from "./routes/home/HomePage";
 import Bookshelf from "./routes/Bookshelf";
 import BookPage from "./routes/BookPage";
+import Auth from "./routes/login/Auth";
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
@@ -21,10 +22,13 @@ const router = createBrowserRouter([
         path: "/",
         element: <HomePage />,
       },
-
       {
         path: "bookshelf",
         element: <Bookshelf />,
+      },
+      {
+        path: "auth",
+        element: <Auth />,
       },
       {
         path: "/bookshelf/:bookId",

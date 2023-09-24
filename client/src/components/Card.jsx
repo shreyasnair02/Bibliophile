@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { NavLink } from "react-router-dom";
 import { TbShoppingCartPlus } from "react-icons/tb";
 import { useRef } from "react";
 const Card = ({ book, cart, setCart, showBook, bookID, index }) => {
@@ -56,14 +57,12 @@ const Card = ({ book, cart, setCart, showBook, bookID, index }) => {
         scale: 1,
         rotate: 0,
       }}
-      onClick={() => {
-        console.log("hello");
-      }}
     >
-      <div
+      <NavLink
         className="flex--0  "
         onMouseOver={() => !isMobile && setShowInfo(true)}
         onMouseLeave={() => !isMobile && setShowInfo(false)}
+        to={`/bookshelf/${bookID}`}
       >
         {/* {console.log(book)} */}
         <img
@@ -90,7 +89,7 @@ const Card = ({ book, cart, setCart, showBook, bookID, index }) => {
             />
           </button>
         </div>
-      </div>
+      </NavLink>
       <AnimatePresence initial={false}>
         {showInfo && (
           <motion.div
