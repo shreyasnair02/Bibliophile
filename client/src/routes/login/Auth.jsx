@@ -1,9 +1,16 @@
 import React, { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import icons from react-icons library
+import { GoogleLogin } from "@react-oauth/google";
 import { motion } from "framer-motion";
 import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
-import { useRef } from "react";
+import { useAuthLogin, useAuthSignup, useOAuth } from "../../hooks/apiQueries";
+import { useQueryClient } from "@tanstack/react-query";
+import { MdErrorOutline } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import { useLogin } from "../../Context/LoginProvider";
+import { useEffect } from "react";
+
 function Auth() {
+  const newUserOAuth = useOAuth();
   const [activeTab, setActiveTab] = useState("login");
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -12,50 +19,55 @@ function Auth() {
   const [signupPassword, setSignupPassword] = useState("");
   const [loginShowPassword, setLoginShowPassword] = useState(false);
   const [signupShowPassword, setSignupShowPassword] = useState(false);
-  // const newUserMutation = useSignUp();
-  // const newCheckMutation = useLogin();
-  // const queryClient = useQueryClient();
-  // const { isLoggedIn, user, setLoginData } = useLoginContext();
+  const newUserMutation = useAuthSignup();
+  const newCheckMutation = useAuthLogin();
+  const queryClient = useQueryClient();
+  const { isLoggedIn, user, setLoginData } = useLogin();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/bookshelf");
+    }
+  }, [isLoggedIn]);
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    // newCheckMutation
-    //   .mutateAsync({
-    //     email_id: loginEmail,
-    //     password: loginPassword,
-    //   })
-    //   .then((data) => {
-    //     if (!data.errors) {
-    //       window.my_modal_1.close();
-    //       setLoginEmail("");
-    //       setLoginPassword("");
-    //       setLoginData(true, data);
-    //       window.location.reload();
-    //     }
-    //   });
+    newCheckMutation
+      .mutateAsync({
+        email: loginEmail,
+        password: loginPassword,
+      })
+      .then((data) => {
+        console.log(data);
+        if (!data.errors) {
+          setLoginEmail("");
+          setLoginPassword("");
+          setLoginData(true, data);
+        }
+      });
   };
 
   const handleSignupSubmit = (e) => {
     e.preventDefault();
-    // newUserMutation
-    //   .mutateAsync({
-    //     email_id: signupEmail,
-    //     name: signupName,
-    //     password: signupPassword,
-    //   })
-    //   .then((data) => {
-    //     if (!data.errors) {
-    //       window.my_modal_1.close();
-    //       setSignupEmail("");
-    //       setSignupPassword("");
-    //       setSignupName("");
-    //       setLoginData(true, data);
-    //       window.location.reload();
-    //     }
-    //   });
+    newUserMutation
+      .mutateAsync({
+        email: signupEmail,
+        name: signupName,
+        password: signupPassword,
+      })
+      .then((data) => {
+        console.log(data);
+        if (!data.errors) {
+          setSignupEmail("");
+          setSignupPassword("");
+          setSignupName("");
+          setLoginData(true, data);
+        }
+      });
   };
 
   return (
@@ -69,25 +81,28 @@ function Auth() {
         <h1 className="text-7xl font-martel text-secondary select-none">
           Bibliophile
         </h1>
-        <div className="form-container p-1">
-          {/* <div className="tabs">
-            <a
-              className={`tab tab-bordered ${
-                activeTab === "login" ? "tab-active" : ""
-              }`}
-              onClick={() => handleTabClick("login")}
-            >
-              Login
-            </a>
-            <a
-              className={`tab tab-bordered ${
-                activeTab === "signup" ? "tab-active" : ""
-              }`}
-              onClick={() => handleTabClick("signup")}
-            >
-              Sign Up
-            </a>
-          </div> */}
+        <div className="form-container p-1 flex flex-col items-stretch justify-stretch">
+          <div className="">
+            <GoogleLogin
+              shape="pill"
+              width="10000px"
+              onSuccess={(credentialResponse) => {
+                newUserOAuth
+                  .mutateAsync({
+                    googleCredentials: credentialResponse?.credential,
+                  })
+                  .then((data) => {
+                    if (!data.errors) {
+                      setLoginData(true, data);
+                      console.log(data);
+                    }
+                  });
+              }}
+              onError={() => {
+                console.log("Login Failed");
+              }}
+            />
+          </div>
           <div className="divider">OR</div>
           {activeTab === "login" ? (
             <form
@@ -106,14 +121,13 @@ function Auth() {
                     className="input input-bordered w-full  focus:outline-offset-1"
                   />
 
-                  {/* {newCheckMutation.isSuccess &&
-                  newCheckMutation.data?.errors?.email && (
-                    <span className="flex-wrap text-sm text-red-500 bg-transparent">
-                      <MdErrorOutline fill="red" />
-  
-                      {newCheckMutation.data?.errors?.email}
-                    </span>
-                  )} */}
+                  {newCheckMutation.isSuccess &&
+                    newCheckMutation.data?.errors?.email && (
+                      <span className="flex-wrap text-sm text-red-500 bg-transparent">
+                        <MdErrorOutline fill="red" />{" "}
+                        {newCheckMutation.data?.errors?.email}
+                      </span>
+                    )}
                 </div>
               </div>
 
@@ -138,17 +152,21 @@ function Auth() {
                       {loginShowPassword ? <RiEyeOffLine /> : <RiEyeLine />}
                     </span>
                   </div>
-                  {/* {newCheckMutation.isSuccess &&
-                  newCheckMutation.data?.errors?.password && (
-                    <span className="flex-wrap text-sm text-red-500 bg-transparent">
-                      <MdErrorOutline fill="red" />
-                      {newCheckMutation.data?.errors?.password}
-                    </span>
-                  )} */}
+                  {newCheckMutation.isSuccess &&
+                    newCheckMutation.data?.errors?.password && (
+                      <span className="flex-wrap text-sm text-red-500 bg-transparent">
+                        <MdErrorOutline fill="red" />{" "}
+                        {newCheckMutation.data?.errors?.password}
+                      </span>
+                    )}
                 </div>
               </div>
               <button type="submit" className="btn btn-primary text-white">
-                Login
+                {newCheckMutation.isLoading ? (
+                  <span className="loading loading-spinner loading-md"></span>
+                ) : (
+                  <span>Login</span>
+                )}
               </button>
               <span className="text-center select-none">
                 Don't have an account?{" "}
@@ -176,14 +194,14 @@ function Auth() {
                     required
                     className="input input-bordered w-full"
                   />
-                  {/* {newUserMutation.isSuccess &&
-                  newUserMutation.data?.errors?.name && (
-                    <span className="flex-wrap text-sm text-red-500 bg-transparent">
-                      <MdErrorOutline fill="red" />
-                      {"  "}
-                      {newUserMutation.data?.errors?.name}
-                    </span>
-                  )} */}
+                  {newUserMutation.isSuccess &&
+                    newUserMutation.data?.errors?.name && (
+                      <span className="flex-wrap text-sm text-red-500 bg-transparent">
+                        <MdErrorOutline fill="red" />
+                        {"  "}
+                        {newUserMutation.data?.errors?.name}
+                      </span>
+                    )}
                 </div>
               </div>
               <div className="input-group flex flex-col">
@@ -197,14 +215,14 @@ function Auth() {
                     required
                     className="input input-bordered w-full"
                   />
-                  {/* {newUserMutation.isSuccess &&
-                  newUserMutation.data?.errors?.email && (
-                    <span className="flex-wrap text-sm text-red-500 bg-transparent">
-                      <MdErrorOutline fill="red" />
-                      {"  "}
-                      {newUserMutation.data?.errors?.email}
-                    </span>
-                  )} */}
+                  {newUserMutation.isSuccess &&
+                    newUserMutation.data?.errors?.email && (
+                      <span className="flex-wrap text-sm text-red-500 bg-transparent">
+                        <MdErrorOutline fill="red" />
+                        {"  "}
+                        {newUserMutation.data?.errors?.email}
+                      </span>
+                    )}
                 </div>
               </div>
 
@@ -227,23 +245,22 @@ function Auth() {
                       {signupShowPassword ? <RiEyeOffLine /> : <RiEyeLine />}
                     </span>
                   </div>
-                  {/* {newUserMutation.isSuccess &&
-                  newUserMutation.data?.errors?.password && (
-                    <span className="flex-wrap text-sm text-red-500 bg-transparent">
-                      <MdErrorOutline fill="red" />
-                      {"  "}
-                      {newUserMutation.data?.errors?.password}
-                    </span>
-                  )} */}
+                  {newUserMutation.isSuccess &&
+                    newUserMutation.data?.errors?.password && (
+                      <span className="flex-wrap text-sm text-red-500 bg-transparent">
+                        <MdErrorOutline fill="red" />
+                        {"  "}
+                        {newUserMutation.data?.errors?.password}
+                      </span>
+                    )}
                 </div>
               </div>
               <button type="submit" className="btn btn-primary text-white">
-                {/* {newUserMutation.isLoading ? (
-                <span className="loading loading-spinner loading-md"></span>
-              ) : (
-                <span>Sign Up</span>
-              )} */}
-                <span>Sign Up</span>
+                {newUserMutation.isLoading ? (
+                  <span className="loading loading-spinner loading-md"></span>
+                ) : (
+                  <span>Sign Up</span>
+                )}
               </button>
               <span className="text-center select-none">
                 Already have an account?

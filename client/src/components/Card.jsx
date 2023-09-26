@@ -50,7 +50,7 @@ const Card = ({ book, cart, setCart, showBook, bookID, index }) => {
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
-      className="relative flex"
+      className="relative flex shadow-lg"
       animate={{
         x: 0,
         y: 0,
@@ -59,19 +59,19 @@ const Card = ({ book, cart, setCart, showBook, bookID, index }) => {
       }}
     >
       <NavLink
-        className="flex--0  "
+        className="group overflow-hidden rounded-lg"
         onMouseOver={() => !isMobile && setShowInfo(true)}
         onMouseLeave={() => !isMobile && setShowInfo(false)}
         to={`/bookshelf/${bookID}`}
       >
         {/* {console.log(book)} */}
         <img
-          className="h-[12.5rem] w-[8.5rem] object-cover rounded-lg rounded-b-none  "
+          className="h-[12.5rem] w-[8.5rem] object-cover rounded-lg rounded-b-none "
           src={book.imageURL}
           alt={book.title}
           loading="lazy"
         />
-        <div className="flex justify-between p-2 items-center bg-neutral rounded-b-lg">
+        <div className="flex justify-between p-2 items-center bg-neutral rounded-b-full">
           <div className="bookshelf__price-container">
             <div className="line-through text-sm">₹{book.price + 1000}</div>
             <h3 className="bookshelf__reduced-price">₹{book.price}</h3>
@@ -79,7 +79,7 @@ const Card = ({ book, cart, setCart, showBook, bookID, index }) => {
           <button
             className=" btn btn-square btn-ghost"
             onClick={(e) => {
-              e.stopPropagation();
+              e.preventDefault();
               //   setCart([...cart, book]);
             }}
           >

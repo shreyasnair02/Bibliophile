@@ -10,6 +10,9 @@ import HomePage from "./routes/home/HomePage";
 import Bookshelf from "./routes/Bookshelf";
 import BookPage from "./routes/BookPage";
 import Auth from "./routes/login/Auth";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { LoginProvider } from "./Context/LoginProvider";
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
@@ -40,10 +43,12 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      {/* <LoginProvider> */}
-      <RouterProvider router={router} />
-      <ReactQueryDevtools />
-      {/* </LoginProvider> */}
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        <LoginProvider>
+          <RouterProvider router={router} />
+          <ReactQueryDevtools />
+        </LoginProvider>
+      </GoogleOAuthProvider>
     </QueryClientProvider>
   </React.StrictMode>
 );

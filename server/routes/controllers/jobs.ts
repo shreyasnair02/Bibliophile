@@ -1,8 +1,12 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
+import jwt_decode from "jwt-decode";
 import { bookModel, IBook, reviewModel } from "../../Models/bookSchema";
-
-const setSort = (sort: string) => {
+import { userModel } from "../../Models/userSchema";
+import { oAuthUserObj } from "../../types/types";
+import { createToken, maxAge } from "../../utils/createToken";
+import { handleValidationErrors } from "../../ErrorValidation/userValidationError";
+export const setSort = (sort: string) => {
   let sortOption = {};
   switch (sort) {
     case "createdAt":
@@ -21,7 +25,7 @@ const setSort = (sort: string) => {
   return sortOption;
 };
 
-const getBooks = async (req: Request, res: Response) => {
+export const getBooks = async (req: Request, res: Response) => {
   try {
     const sort: string = req.query.sort as string;
     console.log(sort);
@@ -42,7 +46,7 @@ const getBooks = async (req: Request, res: Response) => {
   }
 };
 
-const getSearchBooks = async (req: Request, res: Response) => {
+export const getSearchBooks = async (req: Request, res: Response) => {
   try {
     // Decode the query parameter
     const query: string | undefined = req.query.q as string | undefined;
@@ -61,7 +65,7 @@ const getSearchBooks = async (req: Request, res: Response) => {
   }
 };
 
-const createBook = async (req: Request, res: Response) => {
+export const createBook = async (req: Request, res: Response) => {
   try {
     const obj: IBook = req.body.book;
     const book: IBook = new bookModel({ ...obj });
@@ -71,14 +75,14 @@ const createBook = async (req: Request, res: Response) => {
     res.status(409).json(error);
   }
 };
-const getBook = async (req: Request, res: Response) => {
+export const getBook = async (req: Request, res: Response) => {
   const { id } = req.params;
   if (mongoose.Types.ObjectId.isValid(id)) {
     const data = await bookModel.findById(id).populate("reviews");
     res.status(200).json(data);
   }
 };
-const reviewBook = async (req: Request, res: Response) => {
+export const reviewBook = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const obj = req.body.review;
@@ -95,7 +99,7 @@ const reviewBook = async (req: Request, res: Response) => {
   }
 };
 
-const getRelated = async (req: Request, res: Response) => {
+export const getRelated = async (req: Request, res: Response) => {
   try {
     const genres = req.query.genres as string[] | string;
     const { id } = req.params;
@@ -119,11 +123,91 @@ const getRelated = async (req: Request, res: Response) => {
   }
 };
 
-export {
-  reviewBook,
-  getBook,
-  createBook,
-  getBooks,
-  getRelated,
-  getSearchBooks,
+export const oAuth = async (req: Request, res: Response) => {
+  try {
+    const oAuthCredentialJWT = req.body.googleCredentials;
+    const userObj: oAuthUserObj = await jwt_decode(oAuthCredentialJWT);
+    const { sub, email, picture, name } = userObj;
+    const user = await userModel.findOne({ email });
+    if (user) {
+      //login user
+      const user = await userModel.login(email, sub);
+      const token = createToken(user._id);
+      res.cookie("jwt", token, { maxAge: maxAge * 1000 });
+      res.status(200).json({
+        user_id: user._id,
+        email: user.email,
+        name: user.name,
+        avatar_url: user.avatar_url,
+      });
+    } else {
+      //create new user
+      const newUser = new userModel({
+        email,
+        avatar_url: picture,
+        name: name,
+        password: sub,
+      });
+      const newUserData = await newUser.save();
+      const token = createToken(newUserData._id);
+      res.cookie("jwt", token, { maxAge: maxAge * 1000 });
+      res.status(201).json({
+        user_id: newUserData._id,
+        name: newUserData.name,
+        email: newUserData.email,
+        avatar_url: newUserData.avatar_url,
+      });
+    }
+  } catch (error: any) {
+    const errors = handleValidationErrors(error);
+    console.log(errors);
+    res.status(400).json({ errors });
+  }
+};
+
+export const authLogin = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    const user = await userModel.login(email, password);
+    const token = createToken(user._id);
+    res.cookie("jwt", token, { maxAge: maxAge * 1000 });
+    res.status(200).json({
+      user_id: user._id,
+      email: user.email,
+      name: user.name,
+      avatar_url: user.avatar_url,
+    });
+  } catch (error: any) {
+    const errors = handleValidationErrors(error);
+    res.status(400).json({ errors });
+  }
+};
+
+export const authSignup = async (req: Request, res: Response) => {
+  try {
+    const obj = req.body;
+    const user = new userModel(obj);
+    const newUserMessage = await user.save();
+    const token = createToken(newUserMessage._id);
+    res.cookie("jwt", token, { maxAge: maxAge * 1000 });
+    res.status(201).json({
+      user_id: newUserMessage._id,
+      name: newUserMessage.name,
+      email: newUserMessage.email,
+      avatar_url: newUserMessage.avatar_url,
+    });
+  } catch (error: any) {
+    const errors = handleValidationErrors(error);
+    console.log(errors);
+    res.status(400).json({ errors });
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    res.cookie("jwt", "", { maxAge: 1 });
+    res.json({ message: "logged out succesfully" });
+  } catch (error: any) {
+    console.log(error.message);
+  }
 };

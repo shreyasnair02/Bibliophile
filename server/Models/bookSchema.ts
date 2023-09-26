@@ -1,24 +1,5 @@
-import mongoose, { Types, Document } from "mongoose";
-
-interface IReview extends Document {
-  book_id: Types.ObjectId;
-  name: string;
-  comment: string;
-  rating: number;
-  avatar_link: string;
-}
-interface IBook extends Document {
-  title: string;
-  author: string;
-  price: number;
-  imageURL: string;
-  genre: string[];
-  summary: string;
-  rating?: number;
-  related?: Types.ObjectId[];
-  reviews?: Types.ObjectId[];
-  createdOn: Date;
-}
+import mongoose from "mongoose";
+import { IReview, IBook } from "../types/types";
 
 const reviewSchema = new mongoose.Schema<IReview>({
   book_id: {

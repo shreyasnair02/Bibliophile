@@ -6,6 +6,6 @@ const connectionURL = process.env.CONNECTION_URL;
 
 const connectToDB = async () => {
   if (!connectionURL) throw new Error("Database connection failure");
-  await mongoose.connect(connectionURL, { dbName: "bibliophile" });
+  await mongoose.connect(connectionURL, { dbName: "bibliophile0" });
 };
 export default connectToDB;
