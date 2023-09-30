@@ -29,6 +29,11 @@ const bookSchema = new mongoose.Schema<IBook>({
   },
 });
 
+bookSchema.pre("save", async function (next) {
+  console.log(this.id);
+  next();
+});
+
 const reviewModel = mongoose.model<IReview>("reviews", reviewSchema);
 
 const bookModel = mongoose.model<IBook>("books", bookSchema);

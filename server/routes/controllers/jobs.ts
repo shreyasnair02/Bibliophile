@@ -6,6 +6,8 @@ import { userModel } from "../../Models/userSchema";
 import { oAuthUserObj } from "../../types/types";
 import { createToken, maxAge } from "../../utils/createToken";
 import { handleValidationErrors } from "../../ErrorValidation/userValidationError";
+import { renderBookImage } from "../../utils/imageServices";
+
 export const setSort = (sort: string) => {
   let sortOption = {};
   switch (sort) {
@@ -39,8 +41,9 @@ export const getBooks = async (req: Request, res: Response) => {
             genre: { $in: genres.map((genre) => new RegExp(genre, "i")) },
           }
         : {};
-    const data = await bookModel.find(query).sort(setSort(sort));
-    res.status(200).json(data);
+    const books = await bookModel.find(query).sort(setSort(sort));
+    const updatedBooks = await renderBookImage(books);
+    res.status(200).json(updatedBooks);
   } catch (error) {
     res.status(404).json(error);
   }
@@ -57,9 +60,9 @@ export const getSearchBooks = async (req: Request, res: Response) => {
     // Use a regular expression to search for books with titles containing the specified letters
     const regex = new RegExp(query, "i"); // 'i' for case-insensitive search
 
-    const data = await bookModel.find({ title: { $regex: regex } }).limit(5);
-
-    res.status(200).json(data);
+    const books = await bookModel.find({ title: { $regex: regex } }).limit(5);
+    const updatedBooks = await renderBookImage(books);
+    res.status(200).json(updatedBooks);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -72,14 +75,20 @@ export const createBook = async (req: Request, res: Response) => {
     const newBookMessage = await book.save();
     res.status(201).json(newBookMessage);
   } catch (error) {
-    res.status(409).json(error);
+    res.status(409).json({ message: "Could not create book" });
   }
 };
 export const getBook = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  if (mongoose.Types.ObjectId.isValid(id)) {
-    const data = await bookModel.findById(id).populate("reviews");
-    res.status(200).json(data);
+  try {
+    const { id } = req.params;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      const data = await bookModel.findById(id).populate("reviews");
+      if (!data) return res.status(404).json({ message: "book not found" });
+      const updatedBook = await renderBookImage([data]);
+      res.status(200).json(data);
+    }
+  } catch (err: any) {
+    res.status(404).json({ message: "book not found" });
   }
 };
 export const reviewBook = async (req: Request, res: Response) => {
@@ -119,7 +128,7 @@ export const getRelated = async (req: Request, res: Response) => {
       res.status(200).json(data);
     }
   } catch (error) {
-    res.sendStatus(400);
+    res.status(400).json({ message: "No related books" });
   }
 };
 

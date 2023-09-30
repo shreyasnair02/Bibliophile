@@ -1,13 +1,14 @@
 import express from "express";
+import dotenv from "dotenv";
+dotenv.config();
 import bookRoutes from "./routes/books";
 import userRoutes from "./routes/users";
 import connectToDB from "./database/db";
-import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-dotenv.config();
+import { connectToRedis } from "./database/cache";
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cookieParser());
 app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
@@ -19,6 +20,7 @@ app.use("/api/v1/users", userRoutes);
 const establishConnection = async () => {
   try {
     await connectToDB();
+    await connectToRedis();
     startListening();
   } catch (err) {
     console.log(err);
