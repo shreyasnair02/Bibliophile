@@ -13,6 +13,14 @@ const userSchema = new mongoose.Schema<IUser>({
   },
   avatar_url: String,
   name: { type: String, required: true },
+  cart: {
+    type: [mongoose.SchemaTypes.ObjectId],
+    ref: "books",
+  },
+  listings: {
+    type: [mongoose.SchemaTypes.ObjectId],
+    ref: "books",
+  },
   password: {
     type: String,
     required: [true, "Please enter a password"],

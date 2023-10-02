@@ -8,7 +8,6 @@ export const getBooks = async ({ queryKey }) => {
       ? "?genre=" + encodeURIComponent(genres.join(",")) + "&"
       : "?";
   const endpoint = URL + base + `${append}sort=${sort}`;
-  console.log(endpoint);
   const response = await fetch(endpoint, {
     method: "GET",
     credentials: "include",

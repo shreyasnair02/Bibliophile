@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { useState } from "react";
 import Card from "../components/Card";
 import { TbShoppingCartPlus } from "react-icons/tb";
+import { BiCartAlt, BiCartDownload, BiCheck } from "react-icons/bi";
 function BookPage() {
   const { bookId } = useParams();
   const book = useGetBook([bookId]);
@@ -96,7 +97,9 @@ function BookPage() {
                       </span>
                     </div>
                     <div>
-                      <span className="truncate line-clamp-3">{review.comment}</span>
+                      <span className="truncate line-clamp-3">
+                        {review.comment}
+                      </span>
                     </div>
                   </div>
                 </div>

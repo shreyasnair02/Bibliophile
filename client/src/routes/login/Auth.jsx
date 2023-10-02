@@ -8,6 +8,7 @@ import { MdErrorOutline } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "../../Context/LoginProvider";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 function Auth() {
   const newUserOAuth = useOAuth();
@@ -46,7 +47,9 @@ function Auth() {
         if (!data.errors) {
           setLoginEmail("");
           setLoginPassword("");
-          setLoginData(true, data);
+          // setLoginData(true, data);
+          queryClient.invalidateQueries("checkauth");
+          toast.success("Login Successful!");
         }
       });
   };
@@ -65,7 +68,9 @@ function Auth() {
           setSignupEmail("");
           setSignupPassword("");
           setSignupName("");
-          setLoginData(true, data);
+          // setLoginData(true, data);
+          queryClient.invalidateQueries("checkauth");
+          toast.success("Login Successful!");
         }
       });
   };
@@ -93,8 +98,10 @@ function Auth() {
                   })
                   .then((data) => {
                     if (!data.errors) {
-                      setLoginData(true, data);
-                      console.log(data);
+                      // setLoginData(true, data);
+                      queryClient.invalidateQueries("checkauth");
+
+                      toast.success("Login Successful!");
                     }
                   });
               }}

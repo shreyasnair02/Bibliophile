@@ -10,8 +10,10 @@ import {
   postAuthLogin,
   postOAuth,
   postAuthSignup,
+  postAddToCart,
 } from "../utils/apiRequests/postRequests";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 export const useGetBooks = (endpoint, param) => {
   const { selectedGenres, sort } = endpoint;
@@ -70,7 +72,10 @@ export const useLogout = (endpoint) => {
     try {
       await obj.refetch();
       setLoginData(false, null);
-    } catch (error) {}
+      toast.success("Logout successful");
+    } catch (error) {
+      toast.error("Logout failed");
+    }
   };
   return { handleLogout, isLoggingout: obj.isLoading };
 };
@@ -80,5 +85,12 @@ export const useGetBook = (endpoint) => {
   return useQuery({
     queryKey: ["books", id],
     queryFn: getBook,
+  });
+};
+
+export const useAddToCart = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: postAddToCart,
   });
 };

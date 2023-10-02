@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import jwt, { Jwt } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { userModel as User } from "../Models/userSchema";
+import { renderBookImage } from "./imageServices";
+import { IBook } from "../types/types";
 export const requireAuth = (
   req: Request,
   res: Response,
@@ -15,6 +17,7 @@ export const requireAuth = (
         if (err) {
           res.json({ msg: "failed. redirect yourself" });
         } else {
+          req.body.user_id = decodedToken.id;
           next();
         }
       }
@@ -40,10 +43,14 @@ export const checkAuth = async (
             res.json(null);
             next();
           } else {
-            let user = await User.findById(decodedToken.id);
-            res.status(201).json({
-              user,
-            });
+            let user = await User.findById(decodedToken.id)
+              .populate("cart")
+              .lean();
+            if (user) {
+              const updatedBook = await renderBookImage(user.cart);
+              const updatedUser = { ...user, cart: updatedBook };
+              res.status(201).json({ user: updatedUser });
+            }
             next();
           }
         }

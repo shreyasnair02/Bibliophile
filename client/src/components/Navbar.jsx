@@ -6,14 +6,19 @@ import { NavLink } from "react-router-dom";
 import NavSidebar from "./Sidebar/NavSidebar";
 import { useLogin } from "../Context/LoginProvider";
 import { useLogout } from "../hooks/apiQueries";
+import { useCart } from "../Context/CartProvider";
 
 function Navbar() {
   const { isLoggedIn, user, setLoginData } = useLogin();
   const { handleLogout, isLoggingout } = useLogout();
+  const { cart, handleCartChange } = useCart();
+  const getCartTotal = (total, book) => {
+    return total + book.price;
+  };
   return (
     <div className="navbar bg-base-100 border-b-2 ">
       <div className="flex-1">
-        <NavLink to={'/'} className="btn btn-ghost normal-case text-xl">
+        <NavLink to={"/"} className="btn btn-ghost normal-case text-xl">
           <BsBookHalf />
         </NavLink>
       </div>
@@ -58,7 +63,7 @@ function Navbar() {
                   <div className="indicator">
                     <BsCart3 size={22} />
                     <span className="badge badge-sm indicator-item font-chat-start">
-                      8
+                      {cart.length}
                     </span>
                   </div>
                 </label>
@@ -67,12 +72,24 @@ function Navbar() {
                   className="mt-3 z-[1] card card-compact dropdown-content w-52 bg-base-100 shadow"
                 >
                   <div className="card-body bg-neutral rounded-lg">
-                    <span className="font-bold text-lg">8 Items</span>
-                    <span className="text-info">Subtotal: $999</span>
+                    <span className="font-bold text-lg">
+                      {cart.length} Item(s)
+                    </span>
+                    <span className="text-secondary">
+                      Subtotal: $
+                      <span>
+                        {console.log(cart)}
+                        {cart.reduce(getCartTotal, 0)}
+                      </span>
+                    </span>
+
                     <div className="card-actions">
-                      <button className="btn btn-primary btn-block">
+                      <NavLink
+                        to={"/cart"}
+                        className="btn btn-primary btn-block text-white"
+                      >
                         View cart
-                      </button>
+                      </NavLink>
                     </div>
                   </div>
                 </div>

@@ -41,3 +41,17 @@ export const postAuthSignup = async ({ email, password, name }) => {
   const data = await response.json();
   return data;
 };
+
+export const postAddToCart = async ({ book_id, action }) => {
+  const endpoint = URL + "users/cart";
+  const response = await fetch(endpoint, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ book_id, action }),
+  });
+  const data = await response.json();
+  return data;
+};

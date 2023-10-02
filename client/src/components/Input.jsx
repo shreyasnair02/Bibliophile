@@ -30,7 +30,6 @@ export default function Input({
   className = "",
   listData,
 }) {
-  console.log({ listData });
   const [show, setShow] = useState(false);
   const blurTimeoutRef = useRef(null);
   const handleInputBlur = () => {

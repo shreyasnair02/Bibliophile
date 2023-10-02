@@ -20,8 +20,16 @@ const bookSchema = new mongoose.Schema<IBook>({
   genre: { type: [String], required: true },
   summary: { type: String, required: true },
   rating: { type: Number },
-  related: { type: [mongoose.SchemaTypes.ObjectId], ref: "books" },
-  reviews: { type: [mongoose.SchemaTypes.ObjectId], ref: "reviews" },
+  related: {
+    type: [mongoose.SchemaTypes.ObjectId],
+    ref: "books",
+    select: false,
+  },
+  reviews: {
+    type: [mongoose.SchemaTypes.ObjectId],
+    ref: "reviews",
+    select: false,
+  },
   createdOn: {
     type: Date,
     immutable: true,

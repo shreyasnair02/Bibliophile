@@ -47,6 +47,8 @@ export interface IUser extends Document {
   avatar_url: string;
   name: string;
   password: string;
+  cart: IBook[];
+  listings: IBook[];
 }
 export interface IUserModel extends Model<IUser> {
   login(email: string, password: string): Promise<IUser>;

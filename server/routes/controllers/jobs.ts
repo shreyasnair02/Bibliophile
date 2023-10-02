@@ -174,6 +174,34 @@ export const oAuth = async (req: Request, res: Response) => {
   }
 };
 
+export const addToCart = async (req: Request, res: Response) => {
+  try {
+    console.log(req.body);
+    const id = req.body.book_id;
+    const user_id = req.body.user_id;
+    const action = req.body.action;
+    let user;
+    if (action === "push") {
+      user = await userModel.findByIdAndUpdate(
+        user_id,
+        { $push: { cart: id } },
+        { new: true, runValidators: true }
+      );
+    } else {
+      user = await userModel.findByIdAndUpdate(
+        user_id,
+        { $pull: { cart: id } },
+        { new: true, runValidators: true }
+      );
+    }
+    res.status(201).json(user);
+    console.log(user);
+  } catch (err: any) {
+    console.log(err.message);
+    res.status(400).json({ message: "Could not add to cart" });
+  }
+};
+
 export const authLogin = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;

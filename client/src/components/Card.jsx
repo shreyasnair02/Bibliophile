@@ -3,11 +3,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { NavLink } from "react-router-dom";
 import { TbShoppingCartPlus } from "react-icons/tb";
 import { useRef } from "react";
-const Card = ({ book, cart, setCart, showBook, bookID, index }) => {
+import { useCart } from "../Context/CartProvider";
+import { useAddToCart } from "../hooks/apiQueries";
+import { FiCheck } from "react-icons/fi";
+const Card = ({ book, showBook, bookID, index }) => {
   const [showInfo, setShowInfo] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { cart, handleCartChange } = useCart();
+  const addToCart = useAddToCart();
   const cols = useRef(9);
-
   const setCols = () => {
     if (window.innerWidth < 768) {
       cols.current = 3;
@@ -73,20 +77,30 @@ const Card = ({ book, cart, setCart, showBook, bookID, index }) => {
         />
         <div className="flex justify-between p-2 items-center bg-neutral rounded-b-full">
           <div className="bookshelf__price-container">
-            <div className="line-through text-sm">₹{book.price + 1000}</div>
-            <h3 className="bookshelf__reduced-price">₹{book.price}</h3>
+            <span className="line-through text-xs">
+              ₹{Math.round(book.price + 0.8 * book.price)}
+            </span>
+            <h3 className="text-xl font-martel">₹{Math.round(book.price)}</h3>
           </div>
           <button
             className=" btn btn-square btn-ghost"
             onClick={(e) => {
               e.preventDefault();
               //   setCart([...cart, book]);
+              handleCartChange(book) &&
+                addToCart.mutate({ book_id: book._id, action: "push" });
             }}
           >
-            <TbShoppingCartPlus
-              size={23}
-              className="text-secondary stroke-[2]"
-            />
+            {addToCart.isLoading ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-secondary" />
+            ) : addToCart.isSuccess ? (
+              <FiCheck size={23} className="text-secondary" />
+            ) : (
+              <TbShoppingCartPlus
+                size={23}
+                className="text-secondary stroke-[2]"
+              />
+            )}
           </button>
         </div>
       </NavLink>
@@ -105,7 +119,6 @@ const Card = ({ book, cart, setCart, showBook, bookID, index }) => {
             }
             `}
           >
-            {console.log(cols)}
             <h3 className="bookshelf__book-title">{book.title}</h3>
             <h3>{index}</h3>
             <h5 className="bookshelf__book-author">{book.author}</h5>
@@ -123,7 +136,6 @@ const Card = ({ book, cart, setCart, showBook, bookID, index }) => {
                 SVGstorkeWidth={1}
                 fillColor="#4d3619"
               /> */}
-
               <div className="rate"></div>
             </div>
             <div className="bookshelf__about-container">

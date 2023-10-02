@@ -12,6 +12,8 @@ import BookPage from "./routes/BookPage";
 import Auth from "./routes/login/Auth";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { LoginProvider } from "./Context/LoginProvider";
+import { CartProvider } from "./Context/CartProvider";
+import CartPage from "./routes/CartPage";
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const queryClient = new QueryClient();
 
@@ -34,7 +36,15 @@ const router = createBrowserRouter([
         element: <Auth />,
       },
       {
-        path: "/bookshelf/:bookId",
+        path: "cart",
+        element: <CartPage />,
+      },
+      {
+        path: "sellbook",
+        element: <SellBook />,
+      },
+      {
+        path: "bookshelf/:bookId",
         element: <BookPage />,
       },
     ],
@@ -45,8 +55,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <QueryClientProvider client={queryClient}>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
         <LoginProvider>
-          <RouterProvider router={router} />
-          <ReactQueryDevtools />
+          <CartProvider>
+            <RouterProvider router={router} />
+            <ReactQueryDevtools />
+          </CartProvider>
         </LoginProvider>
       </GoogleOAuthProvider>
     </QueryClientProvider>
