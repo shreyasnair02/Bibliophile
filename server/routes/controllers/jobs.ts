@@ -41,7 +41,7 @@ export const getBooks = async (req: Request, res: Response) => {
             genre: { $in: genres.map((genre) => new RegExp(genre, "i")) },
           }
         : {};
-    const books = await bookModel.find(query).sort(setSort(sort));
+    const books = await bookModel.find(query).sort(setSort(sort)).lean();
     const updatedBooks = await renderBookImage(books);
     res.status(200).json(updatedBooks);
   } catch (error) {
@@ -60,7 +60,10 @@ export const getSearchBooks = async (req: Request, res: Response) => {
     // Use a regular expression to search for books with titles containing the specified letters
     const regex = new RegExp(query, "i"); // 'i' for case-insensitive search
 
-    const books = await bookModel.find({ title: { $regex: regex } }).limit(5);
+    const books = await bookModel
+      .find({ title: { $regex: regex } })
+      .limit(5)
+      .lean();
     const updatedBooks = await renderBookImage(books);
     res.status(200).json(updatedBooks);
   } catch (error) {
@@ -70,19 +73,22 @@ export const getSearchBooks = async (req: Request, res: Response) => {
 
 export const createBook = async (req: Request, res: Response) => {
   try {
-    const obj: IBook = req.body.book;
-    const book: IBook = new bookModel({ ...obj });
+    const obj: IBook = req.body;
+    console.log(obj);
+    if (obj.genre.length === 0) obj.genre.push("Others");
+    const book: IBook = new bookModel(obj);
     const newBookMessage = await book.save();
-    res.status(201).json(newBookMessage);
-  } catch (error) {
-    res.status(409).json({ message: "Could not create book" });
+    res.status(201).json({ message: "success", newBookMessage });
+  } catch (error: any) {
+    const errors = handleValidationErrors(error);
+    res.status(409).json({ errors });
   }
 };
 export const getBook = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     if (mongoose.Types.ObjectId.isValid(id)) {
-      const data = await bookModel.findById(id).populate("reviews");
+      const data = await bookModel.findById(id).populate("reviews").lean();
       if (!data) return res.status(404).json({ message: "book not found" });
       const updatedBook = await renderBookImage([data]);
       res.status(200).json(data);
@@ -137,7 +143,7 @@ export const oAuth = async (req: Request, res: Response) => {
     const oAuthCredentialJWT = req.body.googleCredentials;
     const userObj: oAuthUserObj = await jwt_decode(oAuthCredentialJWT);
     const { sub, email, picture, name } = userObj;
-    const user = await userModel.findOne({ email });
+    const user = await userModel.findOne({ email }).lean();
     if (user) {
       //login user
       const user = await userModel.login(email, sub);
@@ -182,17 +188,21 @@ export const addToCart = async (req: Request, res: Response) => {
     const action = req.body.action;
     let user;
     if (action === "push") {
-      user = await userModel.findByIdAndUpdate(
-        user_id,
-        { $push: { cart: id } },
-        { new: true, runValidators: true }
-      );
+      user = await userModel
+        .findByIdAndUpdate(
+          user_id,
+          { $push: { cart: id } },
+          { new: true, runValidators: true }
+        )
+        .lean();
     } else {
-      user = await userModel.findByIdAndUpdate(
-        user_id,
-        { $pull: { cart: id } },
-        { new: true, runValidators: true }
-      );
+      user = await userModel
+        .findByIdAndUpdate(
+          user_id,
+          { $pull: { cart: id } },
+          { new: true, runValidators: true }
+        )
+        .lean();
     }
     res.status(201).json(user);
     console.log(user);

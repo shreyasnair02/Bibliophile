@@ -14,6 +14,8 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { LoginProvider } from "./Context/LoginProvider";
 import { CartProvider } from "./Context/CartProvider";
 import CartPage from "./routes/CartPage";
+import SellBook from "./routes/SellBook";
+import Profile from "./routes/Profile";
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const queryClient = new QueryClient();
 
@@ -38,6 +40,10 @@ const router = createBrowserRouter([
       {
         path: "cart",
         element: <CartPage />,
+      },
+      {
+        path: "profile",
+        element: <Profile />,
       },
       {
         path: "sellbook",

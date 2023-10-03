@@ -55,3 +55,17 @@ export const postAddToCart = async ({ book_id, action }) => {
   const data = await response.json();
   return data;
 };
+
+export const postUploadBook = async (book) => {
+  const endpoint = URL + "books/sellbook";
+  const response = await fetch(endpoint, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(book),
+  });
+  const data = await response.json();
+  return data;
+};

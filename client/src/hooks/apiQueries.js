@@ -11,6 +11,7 @@ import {
   postOAuth,
   postAuthSignup,
   postAddToCart,
+  postUploadBook
 } from "../utils/apiRequests/postRequests";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
@@ -92,5 +93,12 @@ export const useAddToCart = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: postAddToCart,
+  });
+};
+
+export const useUploadBook = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: postUploadBook,
   });
 };

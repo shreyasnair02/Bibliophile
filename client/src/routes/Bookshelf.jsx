@@ -1,14 +1,12 @@
 import React from "react";
 import PageWrapper from "../utils/PageWrapper";
-import NavSidebar from "../components/Sidebar/NavSidebar";
-import { useEffect } from "react";
 import { useState } from "react";
 import Card from "../components/Card";
 import Filter from "../components/Sidebar/Filter";
 import { useGetBooks } from "../hooks/apiQueries";
 import { useQueryClient } from "@tanstack/react-query";
 
-const genres = [
+export const genres = [
   { genre: "Adventure", checked: false },
   { genre: "Business", checked: false },
   { genre: "Drama", checked: false },
@@ -21,6 +19,7 @@ const genres = [
   { genre: "Science Fiction", checked: false },
   { genre: "Self Help", checked: false },
   { genre: "Thriller", checked: false },
+  { genre: "Others", checked: false },
 ];
 
 function Bookshelf() {
@@ -79,8 +78,6 @@ function Bookshelf() {
               <Card
                 book={book}
                 key={book._id}
-                // cart={cart}
-                // setCart={setCart}
                 index={i + 1}
                 bookID={book._id}
               />

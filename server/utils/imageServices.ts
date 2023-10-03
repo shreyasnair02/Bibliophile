@@ -3,38 +3,39 @@ import {
   ListBucketsCommand,
   GetObjectCommand,
   PutObjectCommand,
+  DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { IBook } from "../types/types";
 import { redisClient } from "../database/cache";
 // Rest of your code here
 
-// async function uploadImage(base64String: string, key: string) {
-//   const imageBuffer = Buffer.from(base64String.split(",")[1], "base64");
-//   console.log(
-//     process.env.S3_BUCKET,
-//     process.env.S3_ACCESSKEYID,
-//     process.env.S3_SECRETACCESSKEY,
-//     process.env.S3_REGION
-//   );
-//   const command = new PutObjectCommand({
-//     Bucket: process.env.S3_BUCKET,
-//     Key: "public/" + key,
-//     Body: imageBuffer, // Set the image buffer as the object's data
-//     ContentType: "image/png",
-//   });
-//   try {
-//     const url = await s3Client.send(command);
-//   } catch (err: any) {
-//     console.log(err.message);
-//   }
-// }
+async function uploadImage(base64String: string, key: string) {
+  const imageBuffer = Buffer.from(base64String.split(",")[1], "base64");
 
-// const changeImageURL = async (book: IBook) => {
-//   const key = book._id + ".png";
-//   const imageURL = await uploadImage(book.imageURL, key);
-//   return key;
-// };
+  const command = new PutObjectCommand({
+    Bucket: process.env.S3_BUCKET,
+    Key: "public/" + key,
+    Body: imageBuffer, // Set the image buffer as the object's data
+    ContentType: "image/png",
+  });
+  try {
+    const url = await s3Client.send(command);
+  } catch (err: any) {
+    console.log(err.message);
+  }
+}
+
+export const changeImageURL = async (book: IBook) => {
+  try {
+    const key = book._id + ".png";
+    const imageURL = await uploadImage(book.imageURL, key);
+    return key;
+  } catch (err: any) {
+    console.log(err.message);
+    return "";
+  }
+};
 
 // export const updateBooks = async (req: Request, res: Response) => {
 //   try {
@@ -92,4 +93,17 @@ export const renderBookImage = async (data: IBook[]) => {
     })
   );
   return updateBooks;
+};
+
+export const deleteImage = async (key: string) => {
+  const command = new DeleteObjectCommand({
+    Bucket: process.env.S3_BUCKET || "",
+    Key: key,
+  });
+  try {
+    const data = await s3Client.send(command);
+    return data;
+  } catch (err: any) {
+    console.log(err.message);
+  }
 };

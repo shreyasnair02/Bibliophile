@@ -6,6 +6,7 @@ import { useRef } from "react";
 import { useCart } from "../Context/CartProvider";
 import { useAddToCart } from "../hooks/apiQueries";
 import { FiCheck } from "react-icons/fi";
+import { Rating } from "react-simple-star-rating";
 const Card = ({ book, showBook, bookID, index }) => {
   const [showInfo, setShowInfo] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -124,7 +125,7 @@ const Card = ({ book, showBook, bookID, index }) => {
             <h5 className="bookshelf__book-author">{book.author}</h5>
             <div className="bookshelf__book-rating">
               <p>Condition</p>
-              {/* <Rating
+              <Rating
                 emptyStyle={{ display: "flex" }}
                 fillStyle={{ display: "-webkit-inline-box" }}
                 readonly={true}
@@ -135,7 +136,7 @@ const Card = ({ book, showBook, bookID, index }) => {
                 emptyColor="#f2e7d9"
                 SVGstorkeWidth={1}
                 fillColor="#4d3619"
-              /> */}
+              />
               <div className="rate"></div>
             </div>
             <div className="bookshelf__about-container">
