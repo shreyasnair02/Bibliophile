@@ -17,7 +17,8 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const userSchema_1 = require("../Models/userSchema");
 const imageServices_1 = require("./imageServices");
 const requireAuth = (req, res, next) => {
-    const token = req.cookies.jwt;
+    var _a;
+    const token = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a.jwt;
     if (token) {
         jsonwebtoken_1.default.verify(token, process.env.JWT_secret || "secret", (err, decodedToken) => {
             if (err) {

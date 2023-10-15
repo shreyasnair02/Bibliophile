@@ -166,7 +166,12 @@ export const oAuth = async (req: Request, res: Response) => {
         listings: updatedListings,
       };
 
-      res.cookie("jwt", token, { maxAge: maxAge * 1000 });
+      res.cookie("jwt", token, {
+        maxAge: maxAge * 1000,
+        secure: true,
+        httpOnly: true,
+        sameSite: "none",
+      });
       res.status(201).json({ user: updatedUser });
     } else {
       //create new user
@@ -178,7 +183,13 @@ export const oAuth = async (req: Request, res: Response) => {
       });
       const newUserData = await newUser.save();
       const token = createToken(newUserData._id);
-      res.cookie("jwt", token, { maxAge: maxAge * 1000 });
+      res.cookie("jwt", token, {
+        maxAge: maxAge * 1000,
+
+        secure: true,
+        httpOnly: true,
+        sameSite: "none",
+      });
       res.status(201).json({ user: newUserData });
     }
   } catch (error: any) {
@@ -232,7 +243,13 @@ export const authLogin = async (req: Request, res: Response) => {
       cart: updatedCart,
       listings: updatedListings,
     };
-    res.cookie("jwt", token, { maxAge: maxAge * 1000 });
+    res.cookie("jwt", token, {
+      maxAge: maxAge * 1000,
+
+      secure: true,
+      httpOnly: true,
+      sameSite: "none",
+    });
     res.status(200).json({ user: updatedUser });
   } catch (error: any) {
     const errors = handleValidationErrors(error);
@@ -246,7 +263,13 @@ export const authSignup = async (req: Request, res: Response) => {
     const user = new userModel(obj);
     const newUserMessage = await user.save();
     const token = createToken(newUserMessage._id);
-    res.cookie("jwt", token, { maxAge: maxAge * 1000 });
+    res.cookie("jwt", token, {
+      maxAge: maxAge * 1000,
+
+      secure: true,
+      httpOnly: true,
+      sameSite: "none",
+    });
     res.status(201).json({ user: newUserMessage });
   } catch (error: any) {
     const errors = handleValidationErrors(error);
@@ -257,7 +280,12 @@ export const authSignup = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
   try {
-    res.cookie("jwt", "", { maxAge: 1 });
+    res.cookie("jwt", "logout", {
+      expires: new Date(Date.now()),
+      secure: true,
+      httpOnly: true,
+      sameSite: "none",
+    });
     res.json({ message: "logged out succesfully" });
   } catch (error: any) {
     console.log(error.message);

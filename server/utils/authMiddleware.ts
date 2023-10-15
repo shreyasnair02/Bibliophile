@@ -8,7 +8,7 @@ export const requireAuth = (
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.cookies.jwt;
+  const token = req.cookies?.jwt;
   if (token) {
     jwt.verify(
       token,

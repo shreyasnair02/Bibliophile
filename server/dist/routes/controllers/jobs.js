@@ -174,7 +174,12 @@ const oAuth = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const updatedCart = yield (0, imageServices_1.renderBookImage)(user.cart);
             const updatedListings = yield (0, imageServices_1.renderBookImage)(user.listings);
             const updatedUser = Object.assign(Object.assign({}, user), { cart: updatedCart, listings: updatedListings });
-            res.cookie("jwt", token, { maxAge: createToken_1.maxAge * 1000 });
+            res.cookie("jwt", token, {
+                maxAge: createToken_1.maxAge * 1000,
+                secure: true,
+                httpOnly: true,
+                sameSite: "none",
+            });
             res.status(201).json({ user: updatedUser });
         }
         else {
@@ -187,7 +192,12 @@ const oAuth = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             });
             const newUserData = yield newUser.save();
             const token = (0, createToken_1.createToken)(newUserData._id);
-            res.cookie("jwt", token, { maxAge: createToken_1.maxAge * 1000 });
+            res.cookie("jwt", token, {
+                maxAge: createToken_1.maxAge * 1000,
+                secure: true,
+                httpOnly: true,
+                sameSite: "none",
+            });
             res.status(201).json({ user: newUserData });
         }
     }
@@ -232,7 +242,12 @@ const authLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const updatedCart = yield (0, imageServices_1.renderBookImage)(user.cart);
         const updatedListings = yield (0, imageServices_1.renderBookImage)(user.listings);
         const updatedUser = Object.assign(Object.assign({}, user), { cart: updatedCart, listings: updatedListings });
-        res.cookie("jwt", token, { maxAge: createToken_1.maxAge * 1000 });
+        res.cookie("jwt", token, {
+            maxAge: createToken_1.maxAge * 1000,
+            secure: true,
+            httpOnly: true,
+            sameSite: "none",
+        });
         res.status(200).json({ user: updatedUser });
     }
     catch (error) {
@@ -247,7 +262,12 @@ const authSignup = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const user = new userSchema_1.userModel(obj);
         const newUserMessage = yield user.save();
         const token = (0, createToken_1.createToken)(newUserMessage._id);
-        res.cookie("jwt", token, { maxAge: createToken_1.maxAge * 1000 });
+        res.cookie("jwt", token, {
+            maxAge: createToken_1.maxAge * 1000,
+            secure: true,
+            httpOnly: true,
+            sameSite: "none",
+        });
         res.status(201).json({ user: newUserMessage });
     }
     catch (error) {
@@ -259,7 +279,12 @@ const authSignup = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.authSignup = authSignup;
 const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        res.cookie("jwt", "", { maxAge: 1 });
+        res.cookie("jwt", "logout", {
+            expires: new Date(Date.now()),
+            secure: true,
+            httpOnly: true,
+            sameSite: "none",
+        });
         res.json({ message: "logged out succesfully" });
     }
     catch (error) {
