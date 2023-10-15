@@ -47,7 +47,7 @@ function Filter({ children, handleChange, handleReset, selected, handleSort }) {
   }, [searchData]);
 
   return (
-    <div className="drawer max-h-[90vh] overflow-x-hidden">
+    <div className="drawer max-h-[90dvh] overflow-x-hidden">
       <input
         id="my-drawer"
         type="checkbox"
@@ -98,7 +98,7 @@ function Filter({ children, handleChange, handleReset, selected, handleSort }) {
           className="drawer-overlay bg-black"
           onClick={() => setIsFilterOpen(false)}
         ></label>
-        <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
+        <ul className="menu p-4 w-72 min-h-full bg-base-200 text-base-content">
           {/* Sidebar content here */}
           <div className="px-2  w-full flex items-center justify-between  ">
             <div className=" w-full flex h-6  items-center justify-between my-3 font-montserrat font-semibold text-lg  uppercase ">

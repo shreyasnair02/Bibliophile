@@ -48,7 +48,7 @@ userSchema.statics.login = function (email, password) {
             .populate("cart")
             .populate("listings")
             .lean();
-        console.log({ user });
+        // console.log({ user });
         if (user) {
             const authSuccess = yield bcrypt_1.default.compare(password, user.password);
             if (authSuccess) {

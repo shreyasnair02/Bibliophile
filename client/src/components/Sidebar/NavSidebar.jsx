@@ -36,7 +36,7 @@ function NavSidebar() {
 
           <div className="navbar bg-neutral border-b-2 p-0 ">
             <a className="btn btn-ghost normal-case text-xl">
-              <BsBookHalf />
+              <BsBookHalf className="text-secondary" />
             </a>
           </div>
           <ul className="menu p-4">

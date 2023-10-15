@@ -43,11 +43,11 @@ exports.setSort = setSort;
 const getBooks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const sort = req.query.sort;
-        console.log(sort);
+        // console.log(sort);
         const genres = req.query.genre
             ? req.query.genre.split(",")
             : [];
-        console.log(genres);
+        // console.log(genres);
         const query = genres.length > 0
             ? {
                 genre: { $in: genres.map((genre) => new RegExp(genre, "i")) },
@@ -210,7 +210,7 @@ const oAuth = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.oAuth = oAuth;
 const addToCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log(req.body);
+        // console.log(req.body);
         const id = req.body.book_id;
         const user_id = req.body.user_id;
         const action = req.body.action;
@@ -226,7 +226,7 @@ const addToCart = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 .lean();
         }
         res.status(201).json(user);
-        console.log(user);
+        // console.log(user);
     }
     catch (err) {
         console.log(err.message);

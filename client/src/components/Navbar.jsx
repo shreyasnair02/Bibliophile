@@ -78,7 +78,7 @@ function Navbar() {
                     <span className="text-secondary">
                       Subtotal: $
                       <span>
-                        {console.log(cart)}
+                        {/* {console.log(cart)} */}
                         {cart.reduce(getCartTotal, 0)}
                       </span>
                     </span>

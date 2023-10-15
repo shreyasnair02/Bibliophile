@@ -19,10 +19,10 @@ const CartPage = () => {
   const handleOrder = async () => {
     handleCartChange(null, "clear");
     const data = await handlePlaceOrder();
-    console.log(data);
+    // console.log(data);
   };
   return (
-    <PageWrapper classes={"min-h-[90vh]"}>
+    <PageWrapper classes={"min-h-[90dvh]"}>
       <div className="container mx-auto lg:mt-6 px-4 mt-2">
         <h1 className="mb-4 font-martel font-black lg:text-2xl text-secondary text-2xl">
           Your Cart - {cart.length} item(s)

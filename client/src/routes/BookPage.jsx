@@ -5,7 +5,6 @@ import { useParams } from "react-router-dom";
 import { useState } from "react";
 import Card from "../components/Card";
 import { TbShoppingCartPlus } from "react-icons/tb";
-import { BiCartAlt, BiCartDownload, BiCheck } from "react-icons/bi";
 import { Rating } from "react-simple-star-rating";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "../Context/LoginProvider";
@@ -23,11 +22,15 @@ function BookPage() {
   if (book.isLoading)
     return <div className="font-martel font-black text-2xl ">Loading...</div>;
   return (
-    <PageWrapper classes={" min-h-[90vh] p-6"}>
+    <PageWrapper classes={" min-h-[90dvh] p-6"}>
       <div className="flex flex-col lg:flex-row">
         <div className="flex mt-4 flex-col min-w-[30%] items-center gap-[1ch]">
-          <div className="bookDisplay__image-container rounded-e-2xl rounded-s-lg overflow-hidden ">
-            <img src={book.data.imageURL} alt="" />
+          <div className="bookDisplay__image-container rounded-e-2xl rounded-s-lg overflow-hidden  ">
+            <img
+              src={book.data.imageURL}
+              alt=""
+              className="h-[16.5rem] w-[11rem] object-cover"
+            />
           </div>
           <div>
             <button

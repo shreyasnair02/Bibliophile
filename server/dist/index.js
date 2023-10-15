@@ -32,7 +32,7 @@ app.use("/api/v1/users", users_1.default);
 app.get("/updateall", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const res = yield bookSchema_1.bookModel.updateMany({}, { $set: { owner_id: "admin@gmail.com" } }, { runValidators: true, new: true });
-        console.log(res);
+        // console.log(res);
     }
     catch (err) {
         console.log(err.message);

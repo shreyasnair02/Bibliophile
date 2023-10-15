@@ -91,7 +91,8 @@ const SellBook = () => {
       setBookInfo({ ...bookInfo, imageURL: file });
     },
     onError: (err) => {
-      console.log(err);
+      // console.log(err);
+      toast.error("Error uploading image");
     },
   });
 
@@ -168,7 +169,7 @@ const SellBook = () => {
                   <img
                     src={URL.createObjectURL(bookInfo.imageURL)}
                     alt="Uploaded Cover"
-                    className="w-32 h-48 object-fill"
+                    className="w-32 h-48 object-cover"
                   />
                 </div>
               )}

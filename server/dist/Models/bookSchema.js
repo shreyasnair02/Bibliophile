@@ -77,8 +77,8 @@ const bookSchema = new mongoose_1.default.Schema({
 });
 bookSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(this.id);
-        console.log(this);
+        // console.log(this.id);
+        // console.log(this);
         this.imageURL = yield (0, imageServices_1.changeImageURL)(this);
         next();
     });

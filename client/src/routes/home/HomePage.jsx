@@ -7,7 +7,7 @@ import { NavLink } from "react-router-dom";
 function HomePage() {
   return (
     <PageWrapper classes={' max-h-[90vh] lg:overflow-hidden'}>
-      <section className="flex justify-center lg:flex-col items-center min-h-[90vh] flex-col-reverse">
+      <section className="flex justify-center lg:flex-col items-center min-h-[90dvh] flex-col-reverse">
         <section className="flex flex-col items-center gap-6 mt-10">
           <h3 className="lg:text-md font-bold text-green-900 text-sm">
             PARADISE FOR BOOK LOVERS

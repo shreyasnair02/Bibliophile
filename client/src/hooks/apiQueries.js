@@ -28,7 +28,7 @@ export const useGetBooks = (endpoint, param) => {
 
 export const useSearchBooks = (endpoint, param) => {
   const [search] = endpoint;
-  console.log({ search });
+  // console.log({ search });
   return useQuery({
     queryKey: ["books/search", search],
     queryFn: getBooksSearch,
@@ -121,7 +121,7 @@ export const useUnlistBook = (book_id) => {
       }
       return "success";
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast.error("Book unlist failed");
     }
   };

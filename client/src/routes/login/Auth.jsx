@@ -43,7 +43,7 @@ function Auth() {
         password: loginPassword,
       })
       .then((data) => {
-        console.log(data);
+        // console.log(data);
         if (!data.errors) {
           setLoginEmail("");
           setLoginPassword("");
@@ -64,7 +64,7 @@ function Auth() {
         password: signupPassword,
       })
       .then((data) => {
-        console.log(data);
+        // console.log(data);
         if (!data.errors) {
           setSignupEmail("");
           setSignupPassword("");
@@ -78,7 +78,7 @@ function Auth() {
 
   return (
     <motion.section
-      className=" relative  min-h-[90vh] flex justify-center p-3 lg:p-5"
+      className=" relative  min-h-[90dvh] flex justify-center p-3 lg:p-5"
       initial={{ opacity: 0, y: "30px" }}
       animate={{ opacity: 1, y: "0px" }}
       exit={{ opacity: 0, y: "-30px" }}
@@ -100,7 +100,7 @@ function Auth() {
                   })
                   .then((data) => {
                     if (!data.errors) {
-                      console.log(data);
+                      // console.log(data);
                       setLoginData(true, data.user);
                       // queryClient.invalidateQueries("checkauth");
                       toast.success("Login Successful!");
@@ -110,7 +110,7 @@ function Auth() {
                   });
               }}
               onError={() => {
-                console.log("Login Failed");
+                // console.log("Login Failed");
                 toast.error("Login Failed!");
               }}
             />

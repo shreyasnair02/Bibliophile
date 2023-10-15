@@ -27,7 +27,7 @@ app.get("/updateall", async (req: Request, res: Response) => {
       { $set: { owner_id: "admin@gmail.com" } },
       { runValidators: true, new: true }
     );
-    console.log(res);
+    // console.log(res);
   } catch (err: any) {
     console.log(err.message);
   }
