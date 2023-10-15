@@ -20,14 +20,16 @@ app.use(express.json({ limit: "10mb" }));
 app.use("/api/v1/books", bookRoutes);
 app.use("/api/v1/users", userRoutes);
 
-app.get("/delete", async (req: Request, res: Response) => {
+app.get("/updateall", async (req: Request, res: Response) => {
   try {
-    const id = req.query.id;
-    deleteImage("public/" + id + ".png");
-    const book = await bookModel.findByIdAndDelete(id);
-    res.status(200).json(book);
-  } catch (err) {
-    res.status(500).json(err);
+    const res = await bookModel.updateMany(
+      {},
+      { $set: { owner_id: "admin@gmail.com" } },
+      { runValidators: true, new: true }
+    );
+    console.log(res);
+  } catch (err: any) {
+    console.log(err.message);
   }
 });
 const establishConnection = async () => {

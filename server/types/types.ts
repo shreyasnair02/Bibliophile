@@ -18,6 +18,7 @@ export interface IBook extends Document {
   related?: Types.ObjectId[];
   reviews?: Types.ObjectId[];
   createdOn: Date;
+  owner_id: string;
 }
 export interface ErrorMessage {
   email: string;

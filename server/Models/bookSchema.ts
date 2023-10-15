@@ -14,6 +14,10 @@ const reviewSchema = new mongoose.Schema<IReview>({
   avatar_link: String,
 });
 const bookSchema = new mongoose.Schema<IBook>({
+  owner_id: {
+    type: String,
+    default: "admin@gmail.com",
+  },
   title: {
     type: String,
     required: [true, "Please Enter a Title"],
@@ -34,7 +38,7 @@ const bookSchema = new mongoose.Schema<IBook>({
   summary: {
     type: String,
     required: [true, "Please enter a summary"],
-    minlength: [200, "Minimum summary length is 200 characters"],
+    minlength: [100, "Minimum summary length is 200 characters"],
   },
   rating: {
     type: Number,

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaUpload } from "react-icons/fa";
 import { useDropzone } from "react-dropzone";
 import { genres } from "./Bookshelf";
@@ -6,9 +7,28 @@ import { Rating } from "react-simple-star-rating";
 import PageWrapper from "../utils/PageWrapper";
 import { useUploadBook } from "../hooks/apiQueries";
 import { BiErrorCircle } from "react-icons/bi";
+import { toast } from "react-toastify";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useLogin } from "../Context/LoginProvider";
 const SellBook = () => {
-  const [base64Image, setBase64Image] = useState(null);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const newBook = useUploadBook();
+  const { isLoggedIn, user, setLoginData } = useLogin();
+  useEffect(() => {
+    if (newBook.data?.message === "success") {
+      toast.success("Book uploaded successfully");
+      queryClient.invalidateQueries("checkauth");
+      navigate("/profile");
+    }
+  }, [newBook.data]);
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate("/auth");
+    }
+  }, [isLoggedIn]);
+  const [base64Image, setBase64Image] = useState(null);
   const [bookInfo, setBookInfo] = useState({
     title: "",
     summary: "",
@@ -96,7 +116,7 @@ const SellBook = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     // Handle form submkission with bookInfo
     e.preventDefault();
     newBook.mutate({
@@ -110,9 +130,11 @@ const SellBook = () => {
   return (
     <PageWrapper>
       <div className="container mx-auto p-4">
-        <h1 className="text-2xl mb-4 font-martel font-black">Sell Your Book</h1>
+        <h1 className="text-2xl mb-4 font-martel font-black text-secondary">
+          Sell Your Book
+        </h1>
         <form className="flex flex-col items-center " onSubmit={handleSubmit}>
-          <div className="lg:w-1/2 flex flex-col items-center   ">
+          <div className="lg:w-1/2 w-2/3 flex flex-col items-center   ">
             {/* Image Upload */}
             {newBook.data?.errors?.imageURL ? (
               <label className=" text-red-600 mb-2 flex items-center gap-1">
@@ -136,13 +158,13 @@ const SellBook = () => {
                     Drag &amp; drop an image here, or click to upload
                   </p>
                 ) : (
-                  <p className="text-gray-600 text-center">
+                  <p className="text-gray-600 text-center lg:block hidden">
                     Choose another image
                   </p>
                 )}
               </div>
               {bookInfo.imageURL && (
-                <div className="mt-2">
+                <div className="mt-2 min-w-max">
                   <img
                     src={URL.createObjectURL(bookInfo.imageURL)}
                     alt="Uploaded Cover"
@@ -154,7 +176,7 @@ const SellBook = () => {
             {/* Other Form Fields */}
             {/* ... (Title, Summary, Author, Price) */}
           </div>
-          <div className="mb-4 lg:w-1/2">
+          <div className="mb-4 lg:w-1/2 w-full">
             <label className="flex gap-1 text-gray-600 mb-2">
               Title{" "}
               {newBook.data?.errors?.title && (
@@ -220,7 +242,9 @@ const SellBook = () => {
                 ) : (
                   <label className=" text-gray-600 mb-2">Price: </label>
                 )}
-                <span className="font-martel font-black text-2xl">₹</span>
+                <span className="font-martel font-black text-2xl text-secondary">
+                  ₹
+                </span>
                 <input
                   type="number"
                   name="price"

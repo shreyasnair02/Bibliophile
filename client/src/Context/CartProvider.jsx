@@ -29,12 +29,17 @@ export function CartProvider({ children }) {
           return newCart;
         });
         break;
+      case "clear":
+        setCart([]);
+        break;
     }
     return flag;
   };
   useEffect(() => {
     if (isLoggedIn) {
       setCart(user.cart);
+    } else {
+      setCart([]);
     }
   }, [user, isLoggedIn]);
   return (

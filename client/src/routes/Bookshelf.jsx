@@ -5,6 +5,8 @@ import Card from "../components/Card";
 import Filter from "../components/Sidebar/Filter";
 import { useGetBooks } from "../hooks/apiQueries";
 import { useQueryClient } from "@tanstack/react-query";
+import Loading from "../utils/Loading";
+import BookshelfSkeleton from "../utils/skeleton/BookshelfSkeleton";
 
 export const genres = [
   { genre: "Adventure", checked: false },
@@ -73,15 +75,20 @@ function Bookshelf() {
           selected={selected}
           handleSort={handleSort}
         >
-          <div className="grid m-5  2xl:grid-cols-9 xl:grid-cols-6 lg:grid-cols-5  md:grid-cols-4 grid-cols-3  gap-[clamp(0.5rem,4vw_-_1rem,1rem)] px-6 py-6  overflow-hidden">
-            {books?.data?.map((book, i) => (
-              <Card
-                book={book}
-                key={book._id}
-                index={i + 1}
-                bookID={book._id}
-              />
-            ))}
+          <div className="min-h-[90vh]">
+            <div className="grid m-3  2xl:grid-cols-9 xl:grid-cols-6 lg:grid-cols-5  md:grid-cols-4 grid-cols-3  gap-[clamp(0.5rem,4vw_-_1rem,1rem)] px-1 py-6  overflow-hidden">
+              {books.isLoading && <BookshelfSkeleton />}
+              {!books.isLoading &&
+                books?.data?.map((book, i) => (
+                  <Card
+                    book={book}
+                    key={book._id}
+                    index={i + 1}
+                    infoActive
+                    bookID={book._id}
+                  />
+                ))}
+            </div>
           </div>
         </Filter>
       </section>

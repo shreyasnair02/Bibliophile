@@ -3,6 +3,7 @@ import { MdOutlineAlternateEmail } from "react-icons/md";
 import { BiLock } from "react-icons/bi";
 import { useState } from "react";
 import { useRef } from "react";
+import { NavLink } from "react-router-dom";
 
 const IconProps = { size: 18, color: "currentColor" };
 
@@ -41,9 +42,9 @@ export default function Input({
 
   return (
     <div
-      className={`flex bg-neutral relative w-64 lg:w-96 items-center rounded-md focus-within:outline focus-within:outline-primary focus-within:outline-2 join   ${className}`}
+      className={`flex bg-neutral relative flex-grow lg:flex-grow-0 lg:w-[30rem] items-center rounded-md focus-within:outline focus-within:outline-primary focus-within:outline-2 join    ${className}`}
     >
-      <div className="p-3 bg-base-200 rounded-md h-full rounded-r-none">
+      <div className="p-3 bg-base-200 rounded-md h-full rounded-r-none ">
         {InputIcon(type)}
       </div>
       <input
@@ -63,16 +64,19 @@ export default function Input({
       />
       {listData?.length > 0 && (
         <ul
-          className={`menu absolute top-full left-0 w-full  bg-base-200 z-20 rounded-box ${
+          className={`menu absolute p-0  top-full left-0 w-full  bg-base-200 z-20 rounded-box rounded-t-none ${
             !show && " hidden "
           }`}
         >
           {listData.map((item) => (
-            <li key={item._id}>
-              <a>
-                <img src={item.imageURL} className="h-16 rounded-md" />{" "}
-                <div>{item.title}</div>
-              </a>
+            <li key={item._id} className="p-0">
+              <NavLink to={`/bookshelf/${item._id}`}>
+                <img src={item.imageURL} className="h-14 rounded-sm" />{" "}
+                <div>
+                  <div className="font-martel font-black text-md text-secondary ">{item.title}</div>
+                  <div className="font-martel text-xs">{item.author}</div>
+                </div>
+              </NavLink>
             </li>
           ))}
         </ul>

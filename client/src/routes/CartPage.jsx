@@ -4,10 +4,11 @@ import { BsXCircle } from "react-icons/bs"; // Import the X icon
 import PageWrapper from "../utils/PageWrapper";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../Context/CartProvider";
-import { useAddToCart } from "../hooks/apiQueries";
+import { useAddToCart, usePlaceOrder } from "../hooks/apiQueries";
 import { toast } from "react-toastify";
 const CartPage = () => {
   const { cart, handleCartChange } = useCart();
+  const { handlePlaceOrder, isPlacingOrder } = usePlaceOrder();
   let subTotal = 0;
   let tax = 0;
   const total = cart.reduce((acc, item) => {
@@ -15,6 +16,11 @@ const CartPage = () => {
     tax = subTotal * 0.05;
     return acc + item.price;
   }, 0);
+  const handleOrder = async () => {
+    handleCartChange(null, "clear");
+    const data = await handlePlaceOrder();
+    console.log(data);
+  };
   return (
     <PageWrapper classes={"min-h-[90vh]"}>
       <div className="container mx-auto lg:mt-6 px-4 mt-2">
@@ -27,8 +33,8 @@ const CartPage = () => {
             <div className="bg-base-100 rounded-lg shadow-md p-4">
               {/* Cart Item List */}
 
-              <div className="grid grid-cols-1 gap-4 lg:max-h-[70vh] max-h-[50vh] overflow-auto ">
-                <AnimatePresence>
+              <div className="grid grid-cols-1 gap-4 lg:max-h-[70vh] max-h-[50vh] overflow-x-hidden ">
+                <AnimatePresence mode="">
                   {cart.length === 0 ? (
                     <div className="text-center mt-8">
                       <FaShoppingCart className="text-5xl text-gray-400 mx-auto mb-4" />
@@ -37,10 +43,12 @@ const CartPage = () => {
                       </p>
                     </div>
                   ) : (
-                    cart?.map((book) => (
+                    cart?.map((book, index) => (
                       <CartItem
+                        layout
                         book={book}
                         key={book._id}
+                        i={index}
                         handleCartChange={handleCartChange}
                       />
                     ))
@@ -60,18 +68,19 @@ const CartPage = () => {
               >
                 Apply Promo Code
               </label>
-              <div className="mt-1 relative rounded-md shadow-sm input-group">
+              <div className="mt-1 relative input-group shadow-sm ">
                 <input
                   type="text"
                   id="promoCode"
                   className="input input-bordered w-full bg-white uppercase "
                 />
                 <button
+                  className="btn btn-ghost"
                   onClick={() => {
                     toast.error("Promo Code does not exist!");
                   }}
                 >
-                  <span className="btn btn-ghost">Apply</span>
+                  Apply
                 </button>
               </div>
             </div>
@@ -104,8 +113,11 @@ const CartPage = () => {
                     placeholder="Enter Promo Code"
                     className="input input-bordered input-sm w-full bg-white "
                   />
-                  <button>
-                    <span className="btn btn-ghost btn-md">Apply</span>
+                  <button
+                    className="btn btn-ghost "
+                    onClick={() => toast.error("Promo code does not exist!")}
+                  >
+                    Apply
                   </button>
                 </div>
               </div>
@@ -116,7 +128,10 @@ const CartPage = () => {
               </div>
 
               {/* Checkout Button */}
-              <button className="btn btn-primary text-white w-full mt-4">
+              <button
+                className="btn btn-primary text-white w-full mt-4"
+                onClick={handleOrder}
+              >
                 Place Order
               </button>
             </div>
@@ -127,16 +142,17 @@ const CartPage = () => {
   );
 };
 
-const CartItem = ({ book, handleCartChange }) => {
+const CartItem = ({ book, handleCartChange, i }) => {
   const addToCart = useAddToCart();
 
   return (
     <motion.div
-      key={book._id}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ y: 150 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -15 }}
+      transition={{ type: "", duration: 0.3, delay: 0.1 * i }}
       className="bg-base-100 rounded-lg shadow-lg p-4 mb-4 flex items-center gap-4"
+      key={book?._id}
     >
       {/* 1st Column: Book Image */}
       <div className=" mr-4 ">

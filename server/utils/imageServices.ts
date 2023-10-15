@@ -37,21 +37,7 @@ export const changeImageURL = async (book: IBook) => {
   }
 };
 
-// export const updateBooks = async (req: Request, res: Response) => {
-//   try {
-//     const book = await bookModel.findOne({ _id: "646ba43dab0e001144d43c47" });
-//     if (book) {
-//       book.imageURL = await changeImageURL(book);
-//       // book.imageURL =
-//       //   "asfddfs";
-//       await book.save();
-//       res.send("hello");
-//     }
-//   } catch (error: any) {
-//     console.log(error.message);
-//     res.send("sorry");
-//   } //
-// };
+
 const s3Client = new S3Client({
   region: process.env.S3_REGION || "ap-south-1",
   credentials: {

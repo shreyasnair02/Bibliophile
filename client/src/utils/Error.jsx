@@ -1,18 +1,19 @@
 import React from "react";
-import { FiAlertTriangle } from "react-icons/fi";
+import { NavLink } from "react-router-dom";
+import { TbFaceIdError } from "react-icons/tb";
 
 const Error = () => {
   return (
-    <div className="flex items-center justify-center h-screen text-white">
+    <div className="flex items-center justify-center h-screen text-secondary">
       <div className="text-center flex items-center justify-center flex-col">
-        <FiAlertTriangle className="text-9xl" />
+        <TbFaceIdError className="text-9xl" />
         <h1 className="text-4xl font-bold mt-8">Oops! Something Went Wrong</h1>
-        <a
+        <NavLink
           href="/"
-          className="bg-info btn-link text-error font-semibold px-6 py-3 rounded-full mt-6 hover:bg-red-400 hover:text-white transition duration-300"
+          className="bg-error btn-link text-white font-semibold px-6 py-3 rounded-full mt-6 hover:bg-accent hover:text-secondary transition duration-300"
         >
           Go Back to Home
-        </a>
+        </NavLink>
       </div>
     </div>
   );

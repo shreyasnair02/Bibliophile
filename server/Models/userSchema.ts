@@ -30,7 +30,11 @@ const userSchema = new mongoose.Schema<IUser>({
 });
 
 userSchema.statics.login = async function (email, password) {
-  const user = await this.findOne({ email }).select("+password");
+  const user = await this.findOne({ email })
+    .select("+password")
+    .populate("cart")
+    .populate("listings")
+    .lean();
   console.log({ user });
   if (user) {
     const authSuccess = await bcrypt.compare(password, user.password);

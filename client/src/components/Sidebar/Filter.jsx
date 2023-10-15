@@ -4,11 +4,9 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { TbFilterOff, TbFilter } from "react-icons/tb";
 
-import Card from "../Card";
 import Input from "../Input";
 import { useSearchBooks } from "../../hooks/apiQueries";
 import { QueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
 
 function Filter({ children, handleChange, handleReset, selected, handleSort }) {
   const [isMobile, setIsMobile] = useState(false);
@@ -59,10 +57,10 @@ function Filter({ children, handleChange, handleReset, selected, handleSort }) {
       />
       <div className="drawer-content">
         {/* Page content here */}
-        <div className="flex items-center gap-2 m-2  ">
+        <div className="flex items-center gap-2 m-2 p-2 ">
           <Input
             type="search"
-            className="bookshelf__search"
+            className="  "
             placeholder="Search for books..."
             name="search"
             onChange={(e) => {
@@ -102,26 +100,28 @@ function Filter({ children, handleChange, handleReset, selected, handleSort }) {
         ></label>
         <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
           {/* Sidebar content here */}
-          <div className=" px-4  w-full flex items-center justify-between my-5 ">
-            <div className="px-4 w-full flex items-center justify-between my-5">
-              <h1>Filters</h1>
+          <div className="px-2  w-full flex items-center justify-between  ">
+            <div className=" w-full flex h-6  items-center justify-between my-3 font-montserrat font-semibold text-lg  uppercase ">
+              <h1>Filter By</h1>
               {selected.filter((genre) => genre.checked).length > 0 && (
                 <button
                   onClick={handleReset}
                   className={`btn btn-ghost btn-circle ${
-                    selected.length == 0 && " hidden "
+                    selected.length == 0 && "  "
                   } `}
                 >
-                  <TbFilterOff size={25} className="text-secondary" />
+                  <TbFilterOff size={20} className="text-secondary" />
                 </button>
               )}
             </div>
           </div>
           <FilterOptions handleChange={handleChange} selected={selected} />
-          <div>
-            <h1>Sort By</h1>
-            <div className="form-control">
-              <label className="label cursor-pointer">
+          <div className="">
+            <h1 className=" px-2 mt-3 font-montserrat font-semibold text-lg  uppercase">
+              Sort By
+            </h1>
+            <div className="form-control flex  self-end">
+              <label className="label cursor-pointer flex self-start flex-row-reverse gap-1 ">
                 <span className="label-text">Price (Low to High)</span>
                 <input
                   type="radio"
@@ -132,8 +132,8 @@ function Filter({ children, handleChange, handleReset, selected, handleSort }) {
                 />
               </label>
             </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
+            <div className="form-control flex self-end ">
+              <label className="label cursor-pointer flex flex-row-reverse self-start gap-1">
                 <span className="label-text">Price (High to Low)</span>
                 <input
                   type="radio"
@@ -167,9 +167,9 @@ const FilterOptions = ({ handleChange, selected }) => {
 const Option = ({ genreObj, handleChange, selected }) => {
   const { genre, checked } = genreObj;
   return (
-    <li className="form-control">
-      <label className="label cursor-pointer">
-        <span className="label-text">{genre}</span>
+    <li className="form-control flex flex-row-reverse self-start font-montserrat font-medium ">
+      <label className=" p-1 label cursor-pointer flex flex-row-reverse ">
+        <span className="label-text ">{genre}</span>
         <input
           type="checkbox"
           className="checkbox checkbox-secondary"

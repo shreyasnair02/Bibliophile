@@ -5,13 +5,15 @@ import {
   getBook,
   getBooksSearch,
   getLogout,
+  getUnlistBook,
+  getPlaceOrder,
 } from "../utils/apiRequests/getRequests";
 import {
   postAuthLogin,
   postOAuth,
   postAuthSignup,
   postAddToCart,
-  postUploadBook
+  postUploadBook,
 } from "../utils/apiRequests/postRequests";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
@@ -101,4 +103,45 @@ export const useUploadBook = () => {
   return useMutation({
     mutationFn: postUploadBook,
   });
+};
+
+export const useUnlistBook = (book_id) => {
+  const queryClient = useQueryClient();
+  const obj = useQuery({
+    queryKey: ["users", "listings", book_id],
+    queryFn: getUnlistBook,
+    enabled: false,
+  });
+
+  const handleUnlistBook = async () => {
+    try {
+      const response = await obj.refetch();
+      if (response.data.message === "success") {
+        toast.success("Book unlisted");
+      }
+      return "success";
+    } catch (error) {
+      console.log(error);
+      toast.error("Book unlist failed");
+    }
+  };
+  return { handleUnlistBook, isUnlisting: obj.isLoading };
+};
+
+export const usePlaceOrder = () => {
+  const obj = useQuery({
+    queryKey: ["user", "placeorder"],
+    queryFn: getPlaceOrder,
+    enabled: false,
+  });
+
+  const handlePlaceOrder = async (setLoginData) => {
+    try {
+      await obj.refetch();
+      toast.success("Order has been placed!");
+    } catch (error) {
+      toast.error("Could not place order!");
+    }
+  };
+  return { handlePlaceOrder, isPlacingOrder: obj.isLoading };
 };

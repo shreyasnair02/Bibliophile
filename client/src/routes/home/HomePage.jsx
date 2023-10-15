@@ -6,8 +6,8 @@ import { TbBuildingStore } from "react-icons/tb";
 import { NavLink } from "react-router-dom";
 function HomePage() {
   return (
-    <PageWrapper>
-      <div className="flex justify-center lg:flex-col items-center min-h-[90vh] flex-col-reverse">
+    <PageWrapper classes={' max-h-[90vh] lg:overflow-hidden'}>
+      <section className="flex justify-center lg:flex-col items-center min-h-[90vh] flex-col-reverse">
         <section className="flex flex-col items-center gap-6 mt-10">
           <h3 className="lg:text-md font-bold text-green-900 text-sm">
             PARADISE FOR BOOK LOVERS
@@ -20,7 +20,7 @@ function HomePage() {
             <br />
             <span>Find and sell used books at lower rates</span>
           </h3>
-          <NavLink className="btn btn-primary text-white" to={"/bookshelf"}>
+          <NavLink className="btn btn-primary text-white mb-3" to={"/bookshelf"}>
             <TbBuildingStore size={25} />
             <span>Get started </span>
           </NavLink>
@@ -36,7 +36,7 @@ function HomePage() {
             />
           </picture>
         </div>
-      </div>
+      </section>
     </PageWrapper>
   );
 }

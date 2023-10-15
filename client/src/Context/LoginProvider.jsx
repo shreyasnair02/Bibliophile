@@ -17,8 +17,8 @@ export const LoginProvider = ({ children }) => {
     setUser(userData);
   };
   const initUserAuth = useCheckAuth();
-
   useEffect(() => {
+    console.log("hello");
     if (!initUserAuth.isLoading && !initUserAuth.isError && initUserAuth.data) {
       setLoginData(true, initUserAuth.data?.user);
     }

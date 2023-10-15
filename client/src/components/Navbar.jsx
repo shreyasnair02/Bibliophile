@@ -16,13 +16,13 @@ function Navbar() {
     return total + book.price;
   };
   return (
-    <div className="navbar bg-base-100 border-b-2 ">
-      <div className="flex-1">
+    <div className="justify-between navbar flex bg-base-100 border-b-2 relative px-5">
+      <div className="">
         <NavLink to={"/"} className="btn btn-ghost normal-case text-xl">
-          <BsBookHalf />
+          <BsBookHalf className="text-secondary" />
         </NavLink>
       </div>
-      <div className="flex-grow flex gap-2 ">
+      <div className="flex-grow flex gap-2 absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
         <NavLink
           className={({ isActive, isPending }) =>
             ` btn btn-sm lg:btn-md btn-ghost uppercase text-sm hidden lg:flex text-secondary font-light
@@ -106,14 +106,14 @@ function Navbar() {
                 </label>
                 <ul
                   tabIndex={0}
-                  className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow rounded-box w-52
+                  className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow rounded-lg w-52
              bg-neutral"
                 >
                   <li>
-                    <a className="justify-between">
+                    <NavLink to={"/profile"} className="justify-between">
                       Profile
                       <span className="badge">New</span>
-                    </a>
+                    </NavLink>
                   </li>
                   <li>
                     <a>Settings</a>
@@ -125,9 +125,14 @@ function Navbar() {
               </div>
             </div>
           ) : (
-            <NavLink to={"/auth"} className="hidden lg:block btn-link">
-              Sign In
-            </NavLink>
+            <div>
+              <NavLink
+                to={"/auth"}
+                className="hidden lg:flex btn btn-primary text-white"
+              >
+                Sign Up / Login
+              </NavLink>
+            </div>
           )}
           <div className="lg:hidden flex">
             <NavSidebar />

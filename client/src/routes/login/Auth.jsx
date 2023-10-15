@@ -47,8 +47,9 @@ function Auth() {
         if (!data.errors) {
           setLoginEmail("");
           setLoginPassword("");
-          // setLoginData(true, data);
-          queryClient.invalidateQueries("checkauth");
+          setLoginData(true, data.user);
+          // queryClient.invalidateQueries("checkauth");
+          navigate("/bookshelf");
           toast.success("Login Successful!");
         }
       });
@@ -68,8 +69,8 @@ function Auth() {
           setSignupEmail("");
           setSignupPassword("");
           setSignupName("");
-          // setLoginData(true, data);
-          queryClient.invalidateQueries("checkauth");
+          setLoginData(true, data.user);
+          // queryClient.invalidateQueries("checkauth");
           toast.success("Login Successful!");
         }
       });
@@ -77,20 +78,21 @@ function Auth() {
 
   return (
     <motion.section
-      className=" relative overflow-x-hidden min-w-[90vh] flex justify-center p-5"
+      className=" relative  min-h-[90vh] flex justify-center p-3 lg:p-5"
       initial={{ opacity: 0, y: "30px" }}
       animate={{ opacity: 1, y: "0px" }}
       exit={{ opacity: 0, y: "-30px" }}
     >
-      <div className="max-w-[90vh] ">
-        <h1 className="text-7xl font-martel text-secondary select-none">
+      <div className=" p-3  ">
+        <h1 className="text-center text-5xl lg:text-7xl font-martel text-secondary ">
           Bibliophile
         </h1>
-        <div className="form-container p-1 flex flex-col items-stretch justify-stretch">
-          <div className="">
+        <div className="form form-control p-1 flex flex-col items-stretch justify-stretch">
+          <div className="flex justify-center w-full">
             <GoogleLogin
               shape="pill"
-              width="10000px"
+              size="large"
+              width={400}
               onSuccess={(credentialResponse) => {
                 newUserOAuth
                   .mutateAsync({
@@ -98,15 +100,18 @@ function Auth() {
                   })
                   .then((data) => {
                     if (!data.errors) {
-                      // setLoginData(true, data);
-                      queryClient.invalidateQueries("checkauth");
-
+                      console.log(data);
+                      setLoginData(true, data.user);
+                      // queryClient.invalidateQueries("checkauth");
                       toast.success("Login Successful!");
+                    } else if (data.errors) {
+                      toast.error("Login Failed!");
                     }
                   });
               }}
               onError={() => {
                 console.log("Login Failed");
+                toast.error("Login Failed!");
               }}
             />
           </div>

@@ -7,9 +7,14 @@ import { useCart } from "../Context/CartProvider";
 import { useAddToCart } from "../hooks/apiQueries";
 import { FiCheck } from "react-icons/fi";
 import { Rating } from "react-simple-star-rating";
-const Card = ({ book, showBook, bookID, index }) => {
+import { useLogin } from "../Context/LoginProvider";
+import { useNavigate } from "react-router-dom";
+
+const Card = ({ book, infoActive, bookID, index }) => {
+  const navigate = useNavigate();
   const [showInfo, setShowInfo] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { isLoggedIn, user, setLoginData } = useLogin();
   const { cart, handleCartChange } = useCart();
   const addToCart = useAddToCart();
   const cols = useRef(9);
@@ -71,12 +76,12 @@ const Card = ({ book, showBook, bookID, index }) => {
       >
         {/* {console.log(book)} */}
         <img
-          className="h-[12.5rem] w-[8.5rem] object-cover rounded-lg rounded-b-none "
+          className="h-[12.5rem] w-[9rem] object-cover rounded-lg rounded-b-none "
           src={book.imageURL}
           alt={book.title}
           loading="lazy"
         />
-        <div className="flex justify-between p-2 items-center bg-neutral rounded-b-full">
+        <div className="flex justify-between p-2 items-center bg-neutral rounded-b-lg">
           <div className="bookshelf__price-container">
             <span className="line-through text-xs">
               ₹{Math.round(book.price + 0.8 * book.price)}
@@ -87,7 +92,9 @@ const Card = ({ book, showBook, bookID, index }) => {
             className=" btn btn-square btn-ghost"
             onClick={(e) => {
               e.preventDefault();
-              //   setCart([...cart, book]);
+              if (!isLoggedIn) {
+                navigate("/auth");
+              }
               handleCartChange(book) &&
                 addToCart.mutate({ book_id: book._id, action: "push" });
             }}
@@ -106,12 +113,12 @@ const Card = ({ book, showBook, bookID, index }) => {
         </div>
       </NavLink>
       <AnimatePresence initial={false}>
-        {showInfo && (
+        {showInfo && infoActive && (
           <motion.div
             initial={{ opacity: 0, x: "-20px" }}
             animate={{ opacity: 1, x: "0px" }}
             exit={{ opacity: 0, x: "20px" }}
-            className={`absolute  w-80 top-14 rounded-lg z-20 bg-neutral p-5 flex flex-col justify-center shadow-lg gap-3 
+            className={`absolute border-[2px] border-secondary w-80 top-0 rounded-box z-20 bg-neutral p-4 flex flex-col justify-center shadow-lg gap-2 
             ${
               index % cols.current > cols.current / 2 ||
               index % cols.current == 0
@@ -120,11 +127,11 @@ const Card = ({ book, showBook, bookID, index }) => {
             }
             `}
           >
-            <h3 className="bookshelf__book-title">{book.title}</h3>
-            <h3>{index}</h3>
-            <h5 className="bookshelf__book-author">{book.author}</h5>
-            <div className="bookshelf__book-rating">
-              <p>Condition</p>
+            <h3 className="font-martel font-black text-lg text-secondary">
+              {book.title}
+            </h3>
+            <h5 className="font-martel text-sm ">{book.author}</h5>
+            <div className="flex items-center ">
               <Rating
                 emptyStyle={{ display: "flex" }}
                 fillStyle={{ display: "-webkit-inline-box" }}
@@ -140,8 +147,7 @@ const Card = ({ book, showBook, bookID, index }) => {
               <div className="rate"></div>
             </div>
             <div className="bookshelf__about-container">
-              <h5>About the book</h5>
-              <p className=" line-clamp-2">{book.summary}</p>
+              <p className=" line-clamp-3">{book.summary}</p>
             </div>
           </motion.div>
         )}

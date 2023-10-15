@@ -22,6 +22,7 @@ const Root = () => {
           " relative flex p-3 min-h-10 rounded-md justify-between overflow-hidden cursor-pointer font-bold"
         }
         position="bottom-right"
+        draggable
         autoClose={3000}
       />
     </div>

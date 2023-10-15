@@ -45,10 +45,16 @@ export const checkAuth = async (
           } else {
             let user = await User.findById(decodedToken.id)
               .populate("cart")
+              .populate("listings")
               .lean();
             if (user) {
-              const updatedBook = await renderBookImage(user.cart);
-              const updatedUser = { ...user, cart: updatedBook };
+              const updatedCart = await renderBookImage(user.cart);
+              const updatedListings = await renderBookImage(user.listings);
+              const updatedUser = {
+                ...user,
+                cart: updatedCart,
+                listings: updatedListings,
+              };
               res.status(201).json({ user: updatedUser });
             }
             next();

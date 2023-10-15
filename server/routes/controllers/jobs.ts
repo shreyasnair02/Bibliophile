@@ -6,7 +6,8 @@ import { userModel } from "../../Models/userSchema";
 import { oAuthUserObj } from "../../types/types";
 import { createToken, maxAge } from "../../utils/createToken";
 import { handleValidationErrors } from "../../ErrorValidation/userValidationError";
-import { renderBookImage } from "../../utils/imageServices";
+import { deleteImage, renderBookImage } from "../../utils/imageServices";
+import { sendMail } from "../../utils/mailerServices";
 
 export const setSort = (sort: string) => {
   let sortOption = {};
@@ -73,11 +74,20 @@ export const getSearchBooks = async (req: Request, res: Response) => {
 
 export const createBook = async (req: Request, res: Response) => {
   try {
+    const user_id = req.body.user_id;
     const obj: IBook = req.body;
-    console.log(obj);
+    const User = await userModel.findById(user_id).lean();
     if (obj.genre.length === 0) obj.genre.push("Others");
-    const book: IBook = new bookModel(obj);
+    const book: IBook = new bookModel({ ...obj, owner_id: User?.email });
     const newBookMessage = await book.save();
+    //add book to user's listings
+    const user = await userModel
+      .findByIdAndUpdate(
+        user_id,
+        { $push: { listings: newBookMessage._id } },
+        { new: true, runValidators: true }
+      )
+      .lean();
     res.status(201).json({ message: "success", newBookMessage });
   } catch (error: any) {
     const errors = handleValidationErrors(error);
@@ -148,13 +158,16 @@ export const oAuth = async (req: Request, res: Response) => {
       //login user
       const user = await userModel.login(email, sub);
       const token = createToken(user._id);
+      const updatedCart = await renderBookImage(user.cart);
+      const updatedListings = await renderBookImage(user.listings);
+      const updatedUser = {
+        ...user,
+        cart: updatedCart,
+        listings: updatedListings,
+      };
+
       res.cookie("jwt", token, { maxAge: maxAge * 1000 });
-      res.status(200).json({
-        user_id: user._id,
-        email: user.email,
-        name: user.name,
-        avatar_url: user.avatar_url,
-      });
+      res.status(201).json({ user: updatedUser });
     } else {
       //create new user
       const newUser = new userModel({
@@ -166,12 +179,7 @@ export const oAuth = async (req: Request, res: Response) => {
       const newUserData = await newUser.save();
       const token = createToken(newUserData._id);
       res.cookie("jwt", token, { maxAge: maxAge * 1000 });
-      res.status(201).json({
-        user_id: newUserData._id,
-        name: newUserData.name,
-        email: newUserData.email,
-        avatar_url: newUserData.avatar_url,
-      });
+      res.status(201).json({ user: newUserData });
     }
   } catch (error: any) {
     const errors = handleValidationErrors(error);
@@ -217,13 +225,15 @@ export const authLogin = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     const user = await userModel.login(email, password);
     const token = createToken(user._id);
+    const updatedCart = await renderBookImage(user.cart);
+    const updatedListings = await renderBookImage(user.listings);
+    const updatedUser = {
+      ...user,
+      cart: updatedCart,
+      listings: updatedListings,
+    };
     res.cookie("jwt", token, { maxAge: maxAge * 1000 });
-    res.status(200).json({
-      user_id: user._id,
-      email: user.email,
-      name: user.name,
-      avatar_url: user.avatar_url,
-    });
+    res.status(200).json({ user: updatedUser });
   } catch (error: any) {
     const errors = handleValidationErrors(error);
     res.status(400).json({ errors });
@@ -237,12 +247,7 @@ export const authSignup = async (req: Request, res: Response) => {
     const newUserMessage = await user.save();
     const token = createToken(newUserMessage._id);
     res.cookie("jwt", token, { maxAge: maxAge * 1000 });
-    res.status(201).json({
-      user_id: newUserMessage._id,
-      name: newUserMessage.name,
-      email: newUserMessage.email,
-      avatar_url: newUserMessage.avatar_url,
-    });
+    res.status(201).json({ user: newUserMessage });
   } catch (error: any) {
     const errors = handleValidationErrors(error);
     console.log(errors);
@@ -256,5 +261,62 @@ export const logout = async (req: Request, res: Response) => {
     res.json({ message: "logged out succesfully" });
   } catch (error: any) {
     console.log(error.message);
+  }
+};
+
+export const admindelete = async (req: Request, res: Response) => {
+  try {
+    if (req.query.admin !== process.env.ADMIN_CODE) {
+      res.status(401).json({ message: "Unauthorized" });
+    }
+    const id = req.query.id;
+    await deleteImage("public/" + id + ".png");
+    const book = await bookModel.findByIdAndDelete(id);
+    res.status(200).json(book);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+export const deleteListing = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.query;
+    const { user_id } = req.body;
+    const user = await userModel.findByIdAndUpdate(
+      user_id,
+      { $pull: { listings: id } },
+      { new: true, runValidators: true }
+    );
+    await deleteImage("public/" + id + ".png");
+    const book = await bookModel.findByIdAndDelete(id);
+    res.status(200).json({ message: "success", book });
+  } catch (err) {
+    res.status(500).json({ message: "failure", err });
+  }
+};
+
+export const placeOrder = async (req: Request, res: Response) => {
+  try {
+    let cart: IBook[] = [];
+    const { user_id } = req.body;
+    const user = await userModel.findById(user_id).populate("cart").lean();
+    if (user?.cart && user?.cart.length > 0) {
+      cart = user?.cart.slice();
+      const order = sendMail(user);
+      const updatedUser = await userModel
+        .findByIdAndUpdate(
+          user_id,
+          { cart: [] },
+          { new: true, runValidators: true }
+        )
+        .lean();
+      res.status(200).json({ message: "success", order });
+    } else if (!user) {
+      res.status(400).json({ message: "User not found" });
+    } else if (!cart || cart.length == 0) {
+      res.status(400).json({ message: "cart is empty" });
+    }
+  } catch (err: any) {
+    res.status(500).json({ message: "failure", err });
   }
 };

@@ -15,7 +15,7 @@ import { LoginProvider } from "./Context/LoginProvider";
 import { CartProvider } from "./Context/CartProvider";
 import CartPage from "./routes/CartPage";
 import SellBook from "./routes/SellBook";
-import Profile from "./routes/Profile";
+import YourListingsPage from "./routes/YourListingsPage";
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const queryClient = new QueryClient();
 
@@ -43,7 +43,7 @@ const router = createBrowserRouter([
       },
       {
         path: "profile",
-        element: <Profile />,
+        element: <YourListingsPage />,
       },
       {
         path: "sellbook",
