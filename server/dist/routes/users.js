@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const jobs_1 = require("./controllers/jobs");
+const authMiddleware_1 = require("../utils/authMiddleware");
+const router = (0, express_1.Router)();
+router.route("/checkauth").get(authMiddleware_1.checkAuth);
+router.route("/oauth").post(jobs_1.oAuth);
+router.route("/auth/login").post(jobs_1.authLogin);
+router.route("/auth/signup").post(jobs_1.authSignup);
+router.route("/logout").get(jobs_1.logout);
+router.route("/cart").post(authMiddleware_1.requireAuth, jobs_1.addToCart);
+router.route("/sellbook").post(authMiddleware_1.requireAuth, jobs_1.createBook);
+router.route("/listings").get(authMiddleware_1.requireAuth, jobs_1.deleteListing);
+router.route("/placeorder").get(authMiddleware_1.requireAuth, jobs_1.placeOrder);
+router.route("/admindelete").get(jobs_1.admindelete);
+exports.default = router;
