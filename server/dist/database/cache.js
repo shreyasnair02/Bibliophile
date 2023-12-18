@@ -18,7 +18,7 @@ dotenv_1.default.config();
 const redis_1 = require("redis");
 const password = process.env.REDIS_PASSWORD;
 const host = process.env.REDIS_HOST;
-const port = 19401;
+const port = parseInt(process.env.REDIS_PORT || "10938");
 exports.redisClient = (0, redis_1.createClient)({
     password,
     socket: {
